@@ -1,0 +1,38 @@
+[
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_item_activity.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/item_activity.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/xml_backup_rules.xml.flat",
+        "source": "com.mopwn.app-main-6:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_activity_launch_intent.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_launch_intent.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_item_app.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/item_app.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_activity_main.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_activity_exported_activities.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_exported_activities.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_activity_apk_details.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_apk_details.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/xml_data_extraction_rules.xml.flat",
+        "source": "com.mopwn.app-main-6:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.mopwn.app-merged_res-4:/layout_activity_inspect_package.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_inspect_package.xml"
+    }
+]

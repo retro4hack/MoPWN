@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">MoPWN</string>
+    <string name="scan_apps_initial">Scan the apps...</string>
+    <string name="scan_apps_result">%d apps installed</string>
+    <string name="list_all_apps">List all apps</string>
+    <string name="list_user_apps">List user apps</string>
+    <string name="view_apk_details">View APK Details</string>
+    <string name="view_exported_activities">View Exported Activities</string>
+    <string name="launch_activity">Launch Activity</string>
+    <string name="action_hint">Intent Action (e.g., android.intent.action.VIEW)</string>
+    <string name="data_uri_hint">Data URI (e.g., https://example.com)</string>
+    <string name="extras_hint">Extras (JSON format: {\"key\":\"value\"})</string>
+</resources>

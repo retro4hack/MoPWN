@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#CC222222"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTargetActivity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/green_primary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Action"
+            android:textColor="@color/white"
+            android:layout_marginBottom="4dp"/>
+            
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp">
+            
+            <Spinner
+                android:id="@+id/spinnerAction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"/>
+                
+            <EditText
+                android:id="@+id/etCustomAction"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Or custom action"
+                android:textColorHint="#999"
+                android:textColor="@color/white"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Data URI"
+            android:textColor="@color/white"
+            android:layout_marginBottom="4dp"/>
+            
+        <EditText
+            android:id="@+id/etDataUri"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="e.g. https://example.com"
+            android:textColorHint="#999"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+            
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Extras Builder"
+                android:textColor="@color/white"
+                android:textStyle="bold"/>
+                
+            <Button
+                android:id="@+id/btnAddExtra"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add Extra"
+                android:textSize="12sp"
+                android:minHeight="36dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llExtrasContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp"/>
+
+        <Button
+            android:id="@+id/btnLaunch"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="@string/launch_activity" />
+
+    </LinearLayout>
+
+</ScrollView>
