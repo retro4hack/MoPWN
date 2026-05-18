@@ -2,10 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission 
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:debuggable="false"
+        android:largeHeap="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_mopwn"
@@ -13,7 +17,8 @@
         android:roundIcon="@mipmap/ic_mopwn"
         android:supportsRtl="true"
         android:theme="@style/Theme.MoPWN"
-        tools:targetApi="31">
+        tools:targetApi="31"
+        tools:ignore="HardcodedDebugMode">
         
         <activity android:name=".FileBrowserActivity" android:exported="false" />
 
@@ -30,6 +35,8 @@
         <activity android:name=".ApkDetailsActivity" />
         <activity android:name=".ExportedActivitiesActivity" />
         <activity android:name=".LaunchIntentActivity" />
+        <activity android:name=".SourceTreeActivity" />
+        <activity android:name=".SourceViewerActivity" />
         
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -7,14 +7,12 @@ It's still in development and I will try to add as many functionalities as I can
 ## Current Functionalities
 ### Free to Use
 * Lists the installed applications, enabling the user to choose to show only user apps or all the apps (including the system ones): search functionality included ;)
-* Inspects the application, returning all the relevant information, permissions, flags
+* Inspects the application, returning all the relevant information, permissions, flags etc.
 * Finds all the exported activities, giving the possibility to inject data and extras, call the activity with specific actions 
+* Decompile the application using JADX external library
 ### Root Required
 * Navigate the data of the target application, download any file you need to access it easily
 * Dump or share the APK(s) (including bundles)
-
-## Current limits
-Exported Actvities: The application isn't able to decompile the target apps so it doesn't automatically detect which data are required to run the intent successfully.
 
 ## Troubleshooting
 When you clone your repository it will likely fail while building due to the missing sdk. local.properties is a file that should not be shared, so you will have to created by yourself. 

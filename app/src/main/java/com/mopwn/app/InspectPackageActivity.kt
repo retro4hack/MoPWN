@@ -47,6 +47,82 @@ class InspectPackageActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnShareApk).setOnClickListener {
             extractApk(packageName, share = true)
         }
+
+        findViewById<Button>(R.id.btnDecompile).setOnClickListener {
+            decompileApp(packageName)
+        }
+    }
+
+    private fun decompileApp(packageName: String) {
+        val progressDialog = android.app.ProgressDialog(this).apply {
+            setMessage("Initializing decompiler...\nThis may take a few seconds.")
+            setCancelable(false)
+            show()
+        }
+
+        Thread {
+            try {
+                val appInfo = packageManager.getApplicationInfo(packageName, 0)
+                val baseApkPath = appInfo.sourceDir
+                val sourceFile = java.io.File(baseApkPath)
+                
+                var apkToUse = sourceFile.absolutePath
+                
+                // Try reading directly first (no root required)
+                var readable = false
+                try {
+                    val stream = java.io.FileInputStream(sourceFile)
+                    stream.close()
+                    readable = true
+                } catch (e: Exception) {
+                    readable = false
+                }
+                
+                if (!readable) {
+                    // Fallback to copying with root to cacheDir
+                    val tempApk = java.io.File(cacheDir, "temp_decompile.apk")
+                    if (tempApk.exists()) {
+                        tempApk.delete()
+                    }
+                    
+                    val process = try {
+                        Runtime.getRuntime().exec("su -mm")
+                    } catch (e: Exception) {
+                        Runtime.getRuntime().exec("su")
+                    }
+                    
+                    val os = java.io.DataOutputStream(process.outputStream)
+                    os.writeBytes("cp \"$baseApkPath\" \"${tempApk.absolutePath}\"\n")
+                    os.writeBytes("chmod 666 \"${tempApk.absolutePath}\"\n")
+                    os.writeBytes("exit\n")
+                    os.flush()
+                    process.waitFor()
+                    
+                    if (tempApk.exists() && tempApk.length() > 0) {
+                        apkToUse = tempApk.absolutePath
+                    }
+                }
+                
+                // Init JADX decompiler with selected APK
+                val errorMsg = DecompilerEngine.init(apkToUse, cacheDir)
+                
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    if (errorMsg == null) {
+                        val intent = Intent(this, SourceTreeActivity::class.java)
+                        intent.putExtra("PACKAGE_NAME", packageName)
+                        startActivity(intent)
+                    } else {
+                        android.widget.Toast.makeText(this, "Decompiler Init Error:\n$errorMsg", android.widget.Toast.LENGTH_LONG).show()
+                    }
+                }
+            } catch (e: Exception) {
+                runOnUiThread {
+                    progressDialog.dismiss()
+                    android.widget.Toast.makeText(this, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                }
+            }
+        }.start()
     }
 
     private fun extractApk(packageName: String, share: Boolean) {

@@ -27,7 +27,6 @@ class ApkDetailsActivity : AppCompatActivity() {
         // New Views
         val tvDebuggable = findViewById<TextView>(R.id.tvDebuggable)
         val tvAllowBackup = findViewById<TextView>(R.id.tvAllowBackup)
-        val tvCleartext = findViewById<TextView>(R.id.tvCleartext)
         val tvSharedUid = findViewById<TextView>(R.id.tvSharedUid)
         val tvAppUid = findViewById<TextView>(R.id.tvAppUid)
         val tvCompActivities = findViewById<TextView>(R.id.tvCompActivities)
@@ -69,13 +68,9 @@ class ApkDetailsActivity : AppCompatActivity() {
                 // Security Flags
                 val tvDebuggableRisk = findViewById<TextView>(R.id.tvDebuggableRisk)
                 val tvAllowBackupRisk = findViewById<TextView>(R.id.tvAllowBackupRisk)
-                val tvCleartextRisk = findViewById<TextView>(R.id.tvCleartextRisk)
 
                 val isDebug = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
                 val isBackup = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_ALLOW_BACKUP) != 0
-                val isCleartext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_USES_CLEARTEXT_TRAFFIC) != 0
-                } else true
 
                 tvDebuggable.text = "Debuggable: ${if (isDebug) "YES (Vulnerable)" else "No"}"
                 tvDebuggable.setTextColor(if (isDebug) android.graphics.Color.RED else android.graphics.Color.WHITE)
@@ -129,22 +124,33 @@ class ApkDetailsActivity : AppCompatActivity() {
                     btnFindSisterApps.visibility = android.view.View.GONE
                 }
 
-                // Component Stats
+                // Global app-level permission fallback (if package manifest declares a global permission)
+                val globalPermission = appInfo.permission
+
+                // Component Stats with Unprotected Exported auditing
                 val actCount = packageInfo.activities?.size ?: 0
-                val actExported = packageInfo.activities?.count { it.exported } ?: 0
-                tvCompActivities.text = "Activities: $actCount ($actExported exported)"
+                val actExportedList = packageInfo.activities?.filter { it.exported } ?: emptyList()
+                val actExportedCount = actExportedList.size
+                val actUnprotectedCount = actExportedList.count { it.permission == null && globalPermission == null }
+                tvCompActivities.text = "Activities: $actCount ($actExportedCount exported, $actUnprotectedCount unprotected)"
 
                 val servCount = packageInfo.services?.size ?: 0
-                val servExported = packageInfo.services?.count { it.exported } ?: 0
-                tvCompServices.text = "Services: $servCount ($servExported exported)"
+                val servExportedList = packageInfo.services?.filter { it.exported } ?: emptyList()
+                val servExportedCount = servExportedList.size
+                val servUnprotectedCount = servExportedList.count { it.permission == null && globalPermission == null }
+                tvCompServices.text = "Services: $servCount ($servExportedCount exported, $servUnprotectedCount unprotected)"
 
                 val recCount = packageInfo.receivers?.size ?: 0
-                val recExported = packageInfo.receivers?.count { it.exported } ?: 0
-                tvCompReceivers.text = "Receivers: $recCount ($recExported exported)"
+                val recExportedList = packageInfo.receivers?.filter { it.exported } ?: emptyList()
+                val recExportedCount = recExportedList.size
+                val recUnprotectedCount = recExportedList.count { it.permission == null && globalPermission == null }
+                tvCompReceivers.text = "Receivers: $recCount ($recExportedCount exported, $recUnprotectedCount unprotected)"
 
                 val provCount = packageInfo.providers?.size ?: 0
-                val provExported = packageInfo.providers?.count { it.exported } ?: 0
-                tvCompProviders.text = "Providers: $provCount ($provExported exported)"
+                val provExportedList = packageInfo.providers?.filter { it.exported } ?: emptyList()
+                val provExportedCount = provExportedList.size
+                val provUnprotectedCount = provExportedList.count { it.readPermission == null && it.writePermission == null && globalPermission == null }
+                tvCompProviders.text = "Providers: $provCount ($provExportedCount exported, $provUnprotectedCount unprotected)"
             }
 
             if (packageInfo.requestedPermissions != null) {
