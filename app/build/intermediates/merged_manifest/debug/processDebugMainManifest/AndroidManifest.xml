@@ -30,6 +30,9 @@
         android:testOnly="true"
         android:theme="@style/Theme.MoPWN" >
         <activity
+            android:name="com.mopwn.app.FileBrowserActivity"
+            android:exported="false" />
+        <activity
             android:name="com.mopwn.app.MainActivity"
             android:exported="true" >
             <intent-filter>
@@ -43,6 +46,15 @@
         <activity android:name="com.mopwn.app.ExportedActivitiesActivity" />
         <activity android:name="com.mopwn.app.LaunchIntentActivity" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.mopwn.app.provider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.mopwn.app.androidx-startup"

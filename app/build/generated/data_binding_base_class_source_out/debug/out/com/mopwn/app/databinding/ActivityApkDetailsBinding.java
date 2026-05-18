@@ -4,6 +4,7 @@ package com.mopwn.app.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -21,10 +22,46 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
   private final ScrollView rootView;
 
   @NonNull
+  public final Button btnFindSisterApps;
+
+  @NonNull
   public final LinearLayout llPermissions;
 
   @NonNull
+  public final TextView tvAllowBackup;
+
+  @NonNull
+  public final TextView tvAllowBackupRisk;
+
+  @NonNull
+  public final TextView tvAppUid;
+
+  @NonNull
+  public final TextView tvCleartext;
+
+  @NonNull
+  public final TextView tvCleartextRisk;
+
+  @NonNull
+  public final TextView tvCompActivities;
+
+  @NonNull
+  public final TextView tvCompProviders;
+
+  @NonNull
+  public final TextView tvCompReceivers;
+
+  @NonNull
+  public final TextView tvCompServices;
+
+  @NonNull
   public final TextView tvDataDir;
+
+  @NonNull
+  public final TextView tvDebuggable;
+
+  @NonNull
+  public final TextView tvDebuggableRisk;
 
   @NonNull
   public final TextView tvMinSdk;
@@ -36,6 +73,9 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
   public final TextView tvPackageNameHeader;
 
   @NonNull
+  public final TextView tvSharedUid;
+
+  @NonNull
   public final TextView tvSourceDir;
 
   @NonNull
@@ -44,16 +84,36 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
   @NonNull
   public final TextView tvVersion;
 
-  private ActivityApkDetailsBinding(@NonNull ScrollView rootView,
-      @NonNull LinearLayout llPermissions, @NonNull TextView tvDataDir, @NonNull TextView tvMinSdk,
+  private ActivityApkDetailsBinding(@NonNull ScrollView rootView, @NonNull Button btnFindSisterApps,
+      @NonNull LinearLayout llPermissions, @NonNull TextView tvAllowBackup,
+      @NonNull TextView tvAllowBackupRisk, @NonNull TextView tvAppUid,
+      @NonNull TextView tvCleartext, @NonNull TextView tvCleartextRisk,
+      @NonNull TextView tvCompActivities, @NonNull TextView tvCompProviders,
+      @NonNull TextView tvCompReceivers, @NonNull TextView tvCompServices,
+      @NonNull TextView tvDataDir, @NonNull TextView tvDebuggable,
+      @NonNull TextView tvDebuggableRisk, @NonNull TextView tvMinSdk,
       @NonNull TextView tvNativeLibDir, @NonNull TextView tvPackageNameHeader,
-      @NonNull TextView tvSourceDir, @NonNull TextView tvTargetSdk, @NonNull TextView tvVersion) {
+      @NonNull TextView tvSharedUid, @NonNull TextView tvSourceDir, @NonNull TextView tvTargetSdk,
+      @NonNull TextView tvVersion) {
     this.rootView = rootView;
+    this.btnFindSisterApps = btnFindSisterApps;
     this.llPermissions = llPermissions;
+    this.tvAllowBackup = tvAllowBackup;
+    this.tvAllowBackupRisk = tvAllowBackupRisk;
+    this.tvAppUid = tvAppUid;
+    this.tvCleartext = tvCleartext;
+    this.tvCleartextRisk = tvCleartextRisk;
+    this.tvCompActivities = tvCompActivities;
+    this.tvCompProviders = tvCompProviders;
+    this.tvCompReceivers = tvCompReceivers;
+    this.tvCompServices = tvCompServices;
     this.tvDataDir = tvDataDir;
+    this.tvDebuggable = tvDebuggable;
+    this.tvDebuggableRisk = tvDebuggableRisk;
     this.tvMinSdk = tvMinSdk;
     this.tvNativeLibDir = tvNativeLibDir;
     this.tvPackageNameHeader = tvPackageNameHeader;
+    this.tvSharedUid = tvSharedUid;
     this.tvSourceDir = tvSourceDir;
     this.tvTargetSdk = tvTargetSdk;
     this.tvVersion = tvVersion;
@@ -86,15 +146,87 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnFindSisterApps;
+      Button btnFindSisterApps = ViewBindings.findChildViewById(rootView, id);
+      if (btnFindSisterApps == null) {
+        break missingId;
+      }
+
       id = R.id.llPermissions;
       LinearLayout llPermissions = ViewBindings.findChildViewById(rootView, id);
       if (llPermissions == null) {
         break missingId;
       }
 
+      id = R.id.tvAllowBackup;
+      TextView tvAllowBackup = ViewBindings.findChildViewById(rootView, id);
+      if (tvAllowBackup == null) {
+        break missingId;
+      }
+
+      id = R.id.tvAllowBackupRisk;
+      TextView tvAllowBackupRisk = ViewBindings.findChildViewById(rootView, id);
+      if (tvAllowBackupRisk == null) {
+        break missingId;
+      }
+
+      id = R.id.tvAppUid;
+      TextView tvAppUid = ViewBindings.findChildViewById(rootView, id);
+      if (tvAppUid == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCleartext;
+      TextView tvCleartext = ViewBindings.findChildViewById(rootView, id);
+      if (tvCleartext == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCleartextRisk;
+      TextView tvCleartextRisk = ViewBindings.findChildViewById(rootView, id);
+      if (tvCleartextRisk == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCompActivities;
+      TextView tvCompActivities = ViewBindings.findChildViewById(rootView, id);
+      if (tvCompActivities == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCompProviders;
+      TextView tvCompProviders = ViewBindings.findChildViewById(rootView, id);
+      if (tvCompProviders == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCompReceivers;
+      TextView tvCompReceivers = ViewBindings.findChildViewById(rootView, id);
+      if (tvCompReceivers == null) {
+        break missingId;
+      }
+
+      id = R.id.tvCompServices;
+      TextView tvCompServices = ViewBindings.findChildViewById(rootView, id);
+      if (tvCompServices == null) {
+        break missingId;
+      }
+
       id = R.id.tvDataDir;
       TextView tvDataDir = ViewBindings.findChildViewById(rootView, id);
       if (tvDataDir == null) {
+        break missingId;
+      }
+
+      id = R.id.tvDebuggable;
+      TextView tvDebuggable = ViewBindings.findChildViewById(rootView, id);
+      if (tvDebuggable == null) {
+        break missingId;
+      }
+
+      id = R.id.tvDebuggableRisk;
+      TextView tvDebuggableRisk = ViewBindings.findChildViewById(rootView, id);
+      if (tvDebuggableRisk == null) {
         break missingId;
       }
 
@@ -116,6 +248,12 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvSharedUid;
+      TextView tvSharedUid = ViewBindings.findChildViewById(rootView, id);
+      if (tvSharedUid == null) {
+        break missingId;
+      }
+
       id = R.id.tvSourceDir;
       TextView tvSourceDir = ViewBindings.findChildViewById(rootView, id);
       if (tvSourceDir == null) {
@@ -134,8 +272,11 @@ public final class ActivityApkDetailsBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityApkDetailsBinding((ScrollView) rootView, llPermissions, tvDataDir,
-          tvMinSdk, tvNativeLibDir, tvPackageNameHeader, tvSourceDir, tvTargetSdk, tvVersion);
+      return new ActivityApkDetailsBinding((ScrollView) rootView, btnFindSisterApps, llPermissions,
+          tvAllowBackup, tvAllowBackupRisk, tvAppUid, tvCleartext, tvCleartextRisk,
+          tvCompActivities, tvCompProviders, tvCompReceivers, tvCompServices, tvDataDir,
+          tvDebuggable, tvDebuggableRisk, tvMinSdk, tvNativeLibDir, tvPackageNameHeader,
+          tvSharedUid, tvSourceDir, tvTargetSdk, tvVersion);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

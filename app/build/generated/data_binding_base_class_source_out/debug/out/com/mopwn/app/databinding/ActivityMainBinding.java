@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -23,6 +24,9 @@ public final class ActivityMainBinding implements ViewBinding {
   private final ConstraintLayout rootView;
 
   @NonNull
+  public final Button btnGithub;
+
+  @NonNull
   public final Button btnListAll;
 
   @NonNull
@@ -32,18 +36,23 @@ public final class ActivityMainBinding implements ViewBinding {
   public final LinearLayout buttonLayout;
 
   @NonNull
+  public final EditText etSearch;
+
+  @NonNull
   public final RecyclerView rvApps;
 
   @NonNull
   public final TextView tvStatus;
 
-  private ActivityMainBinding(@NonNull ConstraintLayout rootView, @NonNull Button btnListAll,
-      @NonNull Button btnListUser, @NonNull LinearLayout buttonLayout, @NonNull RecyclerView rvApps,
-      @NonNull TextView tvStatus) {
+  private ActivityMainBinding(@NonNull ConstraintLayout rootView, @NonNull Button btnGithub,
+      @NonNull Button btnListAll, @NonNull Button btnListUser, @NonNull LinearLayout buttonLayout,
+      @NonNull EditText etSearch, @NonNull RecyclerView rvApps, @NonNull TextView tvStatus) {
     this.rootView = rootView;
+    this.btnGithub = btnGithub;
     this.btnListAll = btnListAll;
     this.btnListUser = btnListUser;
     this.buttonLayout = buttonLayout;
+    this.etSearch = etSearch;
     this.rvApps = rvApps;
     this.tvStatus = tvStatus;
   }
@@ -75,6 +84,12 @@ public final class ActivityMainBinding implements ViewBinding {
     // This is done to optimize the compiled bytecode for size and performance.
     int id;
     missingId: {
+      id = R.id.btnGithub;
+      Button btnGithub = ViewBindings.findChildViewById(rootView, id);
+      if (btnGithub == null) {
+        break missingId;
+      }
+
       id = R.id.btnListAll;
       Button btnListAll = ViewBindings.findChildViewById(rootView, id);
       if (btnListAll == null) {
@@ -93,6 +108,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.etSearch;
+      EditText etSearch = ViewBindings.findChildViewById(rootView, id);
+      if (etSearch == null) {
+        break missingId;
+      }
+
       id = R.id.rvApps;
       RecyclerView rvApps = ViewBindings.findChildViewById(rootView, id);
       if (rvApps == null) {
@@ -105,8 +126,8 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
-      return new ActivityMainBinding((ConstraintLayout) rootView, btnListAll, btnListUser,
-          buttonLayout, rvApps, tvStatus);
+      return new ActivityMainBinding((ConstraintLayout) rootView, btnGithub, btnListAll,
+          btnListUser, buttonLayout, etSearch, rvApps, tvStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

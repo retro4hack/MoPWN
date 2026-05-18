@@ -10,4 +10,5 @@
     <string name="action_hint">Intent Action (e.g., android.intent.action.VIEW)</string>
     <string name="data_uri_hint">Data URI (e.g., https://example.com)</string>
     <string name="extras_hint">Extras (JSON format: {\"key\":\"value\"})</string>
+    <string name="accessibility_service_description">MoPWN Monitor tracking service used to capture the current foreground Activity class name for dynamic analysis.</string>
 </resources>

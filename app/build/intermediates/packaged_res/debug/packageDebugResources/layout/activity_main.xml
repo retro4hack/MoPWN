@@ -46,16 +46,45 @@
             android:text="@string/list_user_apps" />
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:hint="Search app name or package..."
+        android:textColor="@color/white"
+        android:textColorHint="#88FFFFFF"
+        android:backgroundTint="@color/green_primary"
+        android:drawableStart="@android:drawable/ic_menu_search"
+        android:drawablePadding="8dp"
+        android:padding="12dp"
+        android:inputType="text"
+        app:layout_constraintTop_toBottomOf="@id/buttonLayout" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvApps"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnGithub"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/buttonLayout" />
+        app:layout_constraintTop_toBottomOf="@id/etSearch" />
+
+    <Button
+        android:id="@+id/btnGithub"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:text="GitHub: retro4hack/MoPwn"
+        android:textSize="12sp"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:textColor="@color/green_primary"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

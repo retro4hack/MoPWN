@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-35:12
-INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-35:12
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-46:12
+INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:1-46:12
 MERGED from [androidx.databinding:viewbinding:8.3.2] C:\Users\lmong\.gradle\caches\9.0.0\transforms\1bd0ef54a1ea628a7d033c7ef2ed41c2\transformed\viewbinding-8.3.2\AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\lmong\.gradle\caches\9.0.0\transforms\daf2631401cfe368ee419ead708f3df8\transformed\material-1.11.0\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\lmong\.gradle\caches\9.0.0\transforms\c7481b76caeeb84cfbd75642ca59fa89\transformed\constraintlayout-2.1.4\AndroidManifest.xml:2:1-11:12
@@ -57,14 +57,12 @@ MERGED from [androidx.print:print:1.0.0] C:\Users\lmong\.gradle\caches\9.0.0\tra
 	xmlns:android
 		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:2:11-69
 uses-permission#android.permission.QUERY_ALL_PACKAGES
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:5:5-6:53
-	tools:ignore
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:6:9-50
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:5:5-77
 	android:name
 		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:5:22-74
 application
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:8:5-33:19
-INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:8:5-33:19
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:7:5-44:19
+INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:7:5-44:19
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\lmong\.gradle\caches\9.0.0\transforms\daf2631401cfe368ee419ead708f3df8\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.11.0] C:\Users\lmong\.gradle\caches\9.0.0\transforms\daf2631401cfe368ee419ead708f3df8\transformed\material-1.11.0\AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] C:\Users\lmong\.gradle\caches\9.0.0\transforms\c7481b76caeeb84cfbd75642ca59fa89\transformed\constraintlayout-2.1.4\AndroidManifest.xml:9:5-20
@@ -86,55 +84,77 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\lmong\.gradle\cach
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.12.0] C:\Users\lmong\.gradle\caches\9.0.0\transforms\b1714662ab1c0a47983f439d4b39fb18\transformed\core-1.12.0\AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:15:9-35
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:14:9-35
 	android:label
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:13:9-41
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:12:9-41
 	android:fullBackupContent
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:11:9-54
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:10:9-54
 	android:roundIcon
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:14:9-45
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:13:9-45
 	tools:targetApi
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:17:9-29
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:16:9-29
 	android:icon
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:12:9-40
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:11:9-40
 	android:allowBackup
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:9:9-35
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:8:9-35
 	android:theme
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:16:9-43
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:15:9-43
 	android:dataExtractionRules
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:10:9-65
-activity#com.mopwn.app.MainActivity
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:19:9-26:20
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:9:9-65
+activity#com.mopwn.app.FileBrowserActivity
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:18:9-82
 	android:exported
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:21:13-36
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:18:55-79
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:20:13-41
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:18:19-54
+activity#com.mopwn.app.MainActivity
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:20:9-27:20
+	android:exported
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:22:13-36
+	android:name
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:21:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:22:13-25:29
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:23:13-26:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:23:17-69
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:24:17-69
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:23:25-66
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:24:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:24:17-77
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:25:17-77
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:24:27-74
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:25:27-74
 activity#com.mopwn.app.InspectPackageActivity
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:28:9-60
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:29:9-60
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:28:19-57
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:29:19-57
 activity#com.mopwn.app.ApkDetailsActivity
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:29:9-56
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:30:9-56
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:29:19-53
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:30:19-53
 activity#com.mopwn.app.ExportedActivitiesActivity
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:30:9-64
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:31:9-64
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:30:19-61
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:31:19-61
 activity#com.mopwn.app.LaunchIntentActivity
-ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:31:9-58
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:32:9-58
 	android:name
-		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:31:19-55
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:32:19-55
+provider#androidx.core.content.FileProvider
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:34:9-42:20
+	android:grantUriPermissions
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:38:13-47
+	android:authorities
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:36:13-57
+	android:exported
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:37:13-37
+	android:name
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:35:13-62
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:39:13-41:54
+	android:resource
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:41:17-51
+	android:name
+		ADDED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml:40:17-67
 uses-sdk
 INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from C:\Users\lmong\.gemini\antigravity\scratch\MoPWN\app\src\main\AndroidManifest.xml

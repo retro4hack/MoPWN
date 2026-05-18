@@ -30,6 +30,9 @@ public final class ActivityLaunchIntentBinding implements ViewBinding {
   public final Button btnLaunch;
 
   @NonNull
+  public final Button btnSelectFiles;
+
+  @NonNull
   public final EditText etCustomAction;
 
   @NonNull
@@ -42,19 +45,25 @@ public final class ActivityLaunchIntentBinding implements ViewBinding {
   public final Spinner spinnerAction;
 
   @NonNull
+  public final TextView tvSelectedFiles;
+
+  @NonNull
   public final TextView tvTargetActivity;
 
   private ActivityLaunchIntentBinding(@NonNull ScrollView rootView, @NonNull Button btnAddExtra,
-      @NonNull Button btnLaunch, @NonNull EditText etCustomAction, @NonNull EditText etDataUri,
-      @NonNull LinearLayout llExtrasContainer, @NonNull Spinner spinnerAction,
+      @NonNull Button btnLaunch, @NonNull Button btnSelectFiles, @NonNull EditText etCustomAction,
+      @NonNull EditText etDataUri, @NonNull LinearLayout llExtrasContainer,
+      @NonNull Spinner spinnerAction, @NonNull TextView tvSelectedFiles,
       @NonNull TextView tvTargetActivity) {
     this.rootView = rootView;
     this.btnAddExtra = btnAddExtra;
     this.btnLaunch = btnLaunch;
+    this.btnSelectFiles = btnSelectFiles;
     this.etCustomAction = etCustomAction;
     this.etDataUri = etDataUri;
     this.llExtrasContainer = llExtrasContainer;
     this.spinnerAction = spinnerAction;
+    this.tvSelectedFiles = tvSelectedFiles;
     this.tvTargetActivity = tvTargetActivity;
   }
 
@@ -97,6 +106,12 @@ public final class ActivityLaunchIntentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnSelectFiles;
+      Button btnSelectFiles = ViewBindings.findChildViewById(rootView, id);
+      if (btnSelectFiles == null) {
+        break missingId;
+      }
+
       id = R.id.etCustomAction;
       EditText etCustomAction = ViewBindings.findChildViewById(rootView, id);
       if (etCustomAction == null) {
@@ -121,6 +136,12 @@ public final class ActivityLaunchIntentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tvSelectedFiles;
+      TextView tvSelectedFiles = ViewBindings.findChildViewById(rootView, id);
+      if (tvSelectedFiles == null) {
+        break missingId;
+      }
+
       id = R.id.tvTargetActivity;
       TextView tvTargetActivity = ViewBindings.findChildViewById(rootView, id);
       if (tvTargetActivity == null) {
@@ -128,7 +149,8 @@ public final class ActivityLaunchIntentBinding implements ViewBinding {
       }
 
       return new ActivityLaunchIntentBinding((ScrollView) rootView, btnAddExtra, btnLaunch,
-          etCustomAction, etDataUri, llExtrasContainer, spinnerAction, tvTargetActivity);
+          btnSelectFiles, etCustomAction, etDataUri, llExtrasContainer, spinnerAction,
+          tvSelectedFiles, tvTargetActivity);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

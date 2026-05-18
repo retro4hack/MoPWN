@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 class LaunchIntentActivity : AppCompatActivity() {
 
     private lateinit var llExtrasContainer: LinearLayout
+    private var selectedUris = ArrayList<Uri>()
     private val extraTypes = arrayOf("String", "Int", "Boolean", "Float")
     private val commonActions = arrayOf(
         "Custom/None",
@@ -48,6 +49,17 @@ class LaunchIntentActivity : AppCompatActivity() {
         
         findViewById<Button>(R.id.btnAddExtra).setOnClickListener {
             addExtraRow()
+        }
+
+        val tvSelectedFiles = findViewById<TextView>(R.id.tvSelectedFiles)
+        val filePickerLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetMultipleContents()) { uris ->
+            selectedUris.clear()
+            selectedUris.addAll(uris)
+            tvSelectedFiles.text = "Selected ${uris.size} file(s)"
+        }
+
+        findViewById<Button>(R.id.btnSelectFiles).setOnClickListener {
+            filePickerLauncher.launch("*/*")
         }
 
         findViewById<Button>(R.id.btnLaunch).setOnClickListener {
@@ -88,6 +100,18 @@ class LaunchIntentActivity : AppCompatActivity() {
                         Toast.makeText(this, "Failed to parse value '$valueStr' as $type for key '$key'", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
+                }
+            }
+
+            // Handle Attachments
+            if (selectedUris.isNotEmpty()) {
+                launchIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                if (selectedUris.size == 1) {
+                    launchIntent.putExtra(Intent.EXTRA_STREAM, selectedUris[0])
+                    if (launchIntent.action == null) launchIntent.action = Intent.ACTION_SEND
+                } else {
+                    launchIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, selectedUris)
+                    if (launchIntent.action == null) launchIntent.action = Intent.ACTION_SEND_MULTIPLE
                 }
             }
 

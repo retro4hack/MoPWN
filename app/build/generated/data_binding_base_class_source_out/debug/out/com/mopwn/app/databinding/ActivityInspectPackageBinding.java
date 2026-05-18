@@ -24,7 +24,16 @@ public final class ActivityInspectPackageBinding implements ViewBinding {
   public final Button btnApkDetails;
 
   @NonNull
+  public final Button btnBrowseFiles;
+
+  @NonNull
+  public final Button btnDumpApk;
+
+  @NonNull
   public final Button btnExportedActivities;
+
+  @NonNull
+  public final Button btnShareApk;
 
   @NonNull
   public final TextView tvInspectPackageName;
@@ -33,11 +42,15 @@ public final class ActivityInspectPackageBinding implements ViewBinding {
   public final TextView tvInspectTitle;
 
   private ActivityInspectPackageBinding(@NonNull ConstraintLayout rootView,
-      @NonNull Button btnApkDetails, @NonNull Button btnExportedActivities,
+      @NonNull Button btnApkDetails, @NonNull Button btnBrowseFiles, @NonNull Button btnDumpApk,
+      @NonNull Button btnExportedActivities, @NonNull Button btnShareApk,
       @NonNull TextView tvInspectPackageName, @NonNull TextView tvInspectTitle) {
     this.rootView = rootView;
     this.btnApkDetails = btnApkDetails;
+    this.btnBrowseFiles = btnBrowseFiles;
+    this.btnDumpApk = btnDumpApk;
     this.btnExportedActivities = btnExportedActivities;
+    this.btnShareApk = btnShareApk;
     this.tvInspectPackageName = tvInspectPackageName;
     this.tvInspectTitle = tvInspectTitle;
   }
@@ -75,9 +88,27 @@ public final class ActivityInspectPackageBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.btnBrowseFiles;
+      Button btnBrowseFiles = ViewBindings.findChildViewById(rootView, id);
+      if (btnBrowseFiles == null) {
+        break missingId;
+      }
+
+      id = R.id.btnDumpApk;
+      Button btnDumpApk = ViewBindings.findChildViewById(rootView, id);
+      if (btnDumpApk == null) {
+        break missingId;
+      }
+
       id = R.id.btnExportedActivities;
       Button btnExportedActivities = ViewBindings.findChildViewById(rootView, id);
       if (btnExportedActivities == null) {
+        break missingId;
+      }
+
+      id = R.id.btnShareApk;
+      Button btnShareApk = ViewBindings.findChildViewById(rootView, id);
+      if (btnShareApk == null) {
         break missingId;
       }
 
@@ -94,7 +125,8 @@ public final class ActivityInspectPackageBinding implements ViewBinding {
       }
 
       return new ActivityInspectPackageBinding((ConstraintLayout) rootView, btnApkDetails,
-          btnExportedActivities, tvInspectPackageName, tvInspectTitle);
+          btnBrowseFiles, btnDumpApk, btnExportedActivities, btnShareApk, tvInspectPackageName,
+          tvInspectTitle);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -68,6 +68,10 @@
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\xml\\data_extraction_rules.xml"
     },
     {
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\xml_accessibility_service_config.xml.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\xml\\accessibility_service_config.xml"
+    },
+    {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\mipmap-xhdpi_ic_launcher_round.webp.flat",
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap-xhdpi\\ic_launcher_round.webp"
     },
@@ -78,6 +82,10 @@
     {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\layout_activity_inspect_package.xml.flat",
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\layout\\activity_inspect_package.xml"
+    },
+    {
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\layout_activity_stack_trace.xml.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\layout\\activity_stack_trace.xml"
     },
     {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\layout_item_app.xml.flat",
@@ -92,12 +100,20 @@
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap-hdpi\\ic_launcher_round.webp"
     },
     {
+        "merged": "com.mopwn.app-debug-4:/layout_activity_main.xml.flat",
+        "source": "com.mopwn.app-main-6:/layout/activity_main.xml"
+    },
+    {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\mipmap-anydpi-v26_ic_mopwn.xml.flat",
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap-anydpi-v26\\ic_mopwn.xml"
     },
     {
-        "merged": "com.mopwn.app-debug-4:/mipmap-anydpi-v26_ic_mopwn.xml.flat",
-        "source": "com.mopwn.app-main-6:/mipmap-anydpi-v26/ic_mopwn.xml"
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\layout_activity_file_browser.xml.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\layout\\activity_file_browser.xml"
+    },
+    {
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\xml_file_paths.xml.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\xml\\file_paths.xml"
     },
     {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\xml_backup_rules.xml.flat",
@@ -108,8 +124,16 @@
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\layout\\item_intent_extra.xml"
     },
     {
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\layout_item_file.xml.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\layout\\item_file.xml"
+    },
+    {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\mipmap_icon.png.flat",
+        "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap\\icon.png"
     },
     {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\drawable_main_background.png.flat",
@@ -118,9 +142,5 @@
     {
         "merged": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-debug-4:\\mipmap-xxxhdpi_ic_launcher_round.webp.flat",
         "source": "C:\\Users\\lmong\\.gradle\\daemon\\9.0.0\\com.mopwn.app-main-6:\\mipmap-xxxhdpi\\ic_launcher_round.webp"
-    },
-    {
-        "merged": "com.mopwn.app-debug-4:/mipmap_icon.png.flat",
-        "source": "com.mopwn.app-main-6:/mipmap/icon.png"
     }
 ]
