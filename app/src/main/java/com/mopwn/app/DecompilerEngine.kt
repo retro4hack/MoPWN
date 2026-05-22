@@ -2,6 +2,8 @@ package com.mopwn.app
 
 import jadx.api.JadxArgs
 import jadx.api.JadxDecompiler
+import jadx.api.ResourceFile
+import jadx.api.ResourceType
 import java.io.File
 
 object DecompilerEngine {
@@ -219,6 +221,76 @@ object DecompilerEngine {
             if (match) return i
         }
         return -1
+    }
+
+    @Synchronized
+    fun getOrInitApk(packageName: String, packageManager: android.content.pm.PackageManager, cacheDir: File): String {
+        val cached = cachedApkPath
+        if (cached != null && cached.contains(packageName)) {
+            return cached
+        }
+        
+        val appInfo = packageManager.getApplicationInfo(packageName, 0)
+        val baseApkPath = appInfo.sourceDir
+        val sourceFile = File(baseApkPath)
+        
+        var apkToUse = sourceFile.absolutePath
+        var readable = false
+        try {
+            java.io.FileInputStream(sourceFile).use { readable = true }
+        } catch (e: Exception) {
+            readable = false
+        }
+        
+        if (!readable) {
+            val tempApk = File(cacheDir, "temp_decompile.apk")
+            if (tempApk.exists()) {
+                tempApk.delete()
+            }
+            val process = try {
+                Runtime.getRuntime().exec("su -mm")
+            } catch (e: Exception) {
+                Runtime.getRuntime().exec("su")
+            }
+            val os = java.io.DataOutputStream(process.outputStream)
+            os.writeBytes("cp \"$baseApkPath\" \"${tempApk.absolutePath}\"\n")
+            os.writeBytes("chmod 666 \"${tempApk.absolutePath}\"\n")
+            os.writeBytes("exit\n")
+            os.flush()
+            process.waitFor()
+            if (tempApk.exists() && tempApk.length() > 0) {
+                apkToUse = tempApk.absolutePath
+            }
+        }
+        
+        init(apkToUse, cacheDir)
+        return apkToUse
+    }
+
+    @Synchronized
+    fun decompileManifest(packageName: String, packageManager: android.content.pm.PackageManager, cacheDir: File): String {
+        try {
+            val apkPath = getOrInitApk(packageName, packageManager, cacheDir)
+            val args = JadxArgs().apply {
+                setInputFile(File(apkPath))
+                setSkipResources(false)
+                setThreadsCount(1)
+            }
+            val dec = JadxDecompiler(args)
+            dec.load()
+            for (resourceFile in dec.resources) {
+                if (resourceFile.type == ResourceType.MANIFEST) {
+                    val container = resourceFile.loadContent()
+                    val text = container.text?.getCodeStr()
+                    dec.close()
+                    return text ?: "Error: Decoded manifest text is null."
+                }
+            }
+            dec.close()
+            return "Error: AndroidManifest.xml not found in APK resources."
+        } catch (e: Throwable) {
+            return "Error decompiling manifest:\n${e.stackTraceToString()}"
+        }
     }
 
     @Synchronized

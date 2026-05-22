@@ -52,4 +52,7 @@ dependencies {
     implementation("io.github.skylot:jadx-dex-input:1.4.7")
     // SLF4J binder for Android to route JADX logs to logcat
     implementation("org.slf4j:slf4j-android:1.7.36")
+    
+    // Tukaani XZ library for decompressing frida-server.xz files
+    implementation("org.tukaani:xz:1.9")
 }

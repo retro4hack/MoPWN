@@ -67,6 +67,11 @@ class MainActivity : AppCompatActivity() {
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
 
+        findViewById<com.google.android.material.floatingactionbutton.FloatingActionButton>(R.id.fabGeneralTools).setOnClickListener {
+            val intent = Intent(this, GeneralToolsActivity::class.java)
+            startActivity(intent)
+        }
+
         scanApps()
     }
 

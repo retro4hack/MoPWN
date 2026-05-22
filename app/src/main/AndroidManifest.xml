@@ -6,6 +6,10 @@
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="false"
         android:debuggable="false"
@@ -37,6 +41,17 @@
         <activity android:name=".LaunchIntentActivity" />
         <activity android:name=".SourceTreeActivity" />
         <activity android:name=".SourceViewerActivity" />
+        <activity android:name=".FileViewerActivity" />
+        <activity android:name=".ManifestViewerActivity" />
+        <activity android:name=".GeneralToolsActivity" />
+        <activity android:name=".FridaManagerActivity" />
+        
+        <service 
+            android:name=".ForegroundTrackerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ForegroundServicePermission" />
         
         <provider
             android:name="androidx.core.content.FileProvider"
