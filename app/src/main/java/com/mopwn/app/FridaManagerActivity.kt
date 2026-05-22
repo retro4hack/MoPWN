@@ -212,16 +212,17 @@ class FridaManagerActivity : AppCompatActivity() {
                     Toast.makeText(this, "Starting Frida Server...", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                // Kill Frida Server
+                // Kill Frida Server using universal kill -9 loop over pgrep PIDs, alongside fallback pkill/killall
                 executeRootCommand("pkill -f frida-server")
                 executeRootCommand("killall frida-server")
+                executeRootCommand("for pid in \$(pgrep -f frida-server); do kill -9 \$pid; done")
                 runOnUiThread {
                     Toast.makeText(this, "Stopping Frida Server...", Toast.LENGTH_SHORT).show()
                 }
             }
             
-            // Allow 500ms for system processes to change state before checking
-            Thread.sleep(500)
+            // Allow 1000ms for system processes to completely terminate before updating status
+            Thread.sleep(1000)
             runOnUiThread { checkFridaStatus() }
         }.start()
     }
@@ -230,9 +231,10 @@ class FridaManagerActivity : AppCompatActivity() {
         btnToggleInstall.isEnabled = false
         btnToggleRun.isEnabled = false
         Thread {
-            // Kill if running
+            // Kill if running using all termination tools
             executeRootCommand("pkill -f frida-server")
             executeRootCommand("killall frida-server")
+            executeRootCommand("for pid in \$(pgrep -f frida-server); do kill -9 \$pid; done")
             
             // Delete file
             executeRootCommand("rm -f /data/local/tmp/frida-server")
