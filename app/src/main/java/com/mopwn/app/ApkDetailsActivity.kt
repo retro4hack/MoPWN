@@ -18,6 +18,7 @@ class ApkDetailsActivity : AppCompatActivity() {
         val tvPackageNameHeader = findViewById<TextView>(R.id.tvPackageNameHeader)
         val tvVersion = findViewById<TextView>(R.id.tvVersion)
         val tvAppType = findViewById<TextView>(R.id.tvAppType)
+        val tvMainActivity = findViewById<TextView>(R.id.tvMainActivity)
         val tvMinSdk = findViewById<TextView>(R.id.tvMinSdk)
         val tvTargetSdk = findViewById<TextView>(R.id.tvTargetSdk)
         val tvInstaller = findViewById<TextView>(R.id.tvInstaller)
@@ -81,6 +82,21 @@ class ApkDetailsActivity : AppCompatActivity() {
                 // App Type (System vs User)
                 val isSystem = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
                 tvAppType.text = "App Type: ${if (isSystem) "System App" else "User App"}"
+
+                // Main Activity
+                val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+                val mainActivityName = launchIntent?.component?.className ?: "None / Not Launchable"
+                tvMainActivity.text = "Main Activity: $mainActivityName"
+
+                if (launchIntent != null) {
+                    tvMainActivity.setOnLongClickListener {
+                        val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                        val clip = android.content.ClipData.newPlainText("Main Activity", mainActivityName)
+                        clipboard.setPrimaryClip(clip)
+                        android.widget.Toast.makeText(this, "Main Activity class name copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                }
 
                 tvMinSdk.text = "Min SDK: ${appInfo.minSdkVersion}"
                 tvTargetSdk.text = "Target SDK: ${appInfo.targetSdkVersion}"
@@ -306,49 +322,78 @@ class ApkDetailsActivity : AppCompatActivity() {
 
             // Asynchronous premium audits for Modules 1, 2, and 4
             Thread {
-                val apkPath = appInfo.sourceDir
                 val cacheDir = cacheDir
+                val apkPaths = ArrayList<String>().apply {
+                    add(appInfo.sourceDir)
+                    appInfo.splitSourceDirs?.let { addAll(it) }
+                }
                 
-                // 1. Detect Framework and Packer
-                val fwPacker = detectFrameworkAndPacker(apkPath)
-                val framework = fwPacker.first
-                val packer = fwPacker.second
-                
-                // 2. Scan ZIP entries to locate native libraries
-                val entriesList = mutableListOf<String>()
-                try {
-                    java.util.zip.ZipFile(apkPath).use { zip ->
-                        val entries = zip.entries()
-                        while (entries.hasMoreElements()) {
-                            entriesList.add(entries.nextElement().name)
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Fallback to unzip -l via root
+                // 1. Scan ZIP entries across base and all split APKs to locate native libraries
+                val entriesList = ArrayList<Pair<String, String>>() // Pair(apkPath, entryName)
+                for (apk in apkPaths) {
                     try {
-                        val process = Runtime.getRuntime().exec("su")
-                        val os = java.io.DataOutputStream(process.outputStream)
-                        os.writeBytes("unzip -l \"$apkPath\"\n")
-                        os.writeBytes("exit\n")
-                        os.flush()
-                        
-                        val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
-                        var line: String?
-                        while (reader.readLine().also { line = it } != null) {
-                            val parts = line!!.trim().split(Regex("\\s+"))
-                            if (parts.size >= 4) {
-                                val name = parts.subList(3, parts.size).joinToString(" ")
-                                entriesList.add(name)
+                        java.util.zip.ZipFile(apk).use { zip ->
+                            val entries = zip.entries()
+                            while (entries.hasMoreElements()) {
+                                entriesList.add(Pair(apk, entries.nextElement().name))
                             }
                         }
-                        process.waitFor()
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
+                    } catch (e: Exception) {
+                        // Fallback to unzip -l via root
+                        try {
+                            val process = Runtime.getRuntime().exec("su")
+                            val os = java.io.DataOutputStream(process.outputStream)
+                            os.writeBytes("unzip -l \"$apk\"\n")
+                            os.writeBytes("exit\n")
+                            os.flush()
+                            
+                            val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                            var line: String?
+                            while (reader.readLine().also { line = it } != null) {
+                                val parts = line!!.trim().split(Regex("\\s+"))
+                                if (parts.size >= 4) {
+                                    val name = parts.subList(3, parts.size).joinToString(" ")
+                                    entriesList.add(Pair(apk, name))
+                                }
+                            }
+                            process.waitFor()
+                        } catch (ex: Exception) {
+                            ex.printStackTrace()
+                        }
+                    }
+                }
+
+                // 2. Detect Framework and Packer across all entries
+                var framework = "Native (Java/Kotlin)"
+                var packer = "None detected (Clean)"
+                
+                for (pair in entriesList) {
+                    val entry = pair.second
+                    if (entry.contains("libflutter.so") || entry.contains("libapp.so")) {
+                        framework = "Flutter"
+                    } else if (entry.contains("libreactnativejni.so") || entry.contains("index.android.bundle")) {
+                        framework = "React Native"
+                    } else if (entry.contains("libmonodroid.so") || entry.contains("libmonosgen-2.0.so")) {
+                        framework = "Xamarin"
+                    } else if (entry.contains("libunity.so") || entry.contains("libmain.so")) {
+                        framework = "Unity"
+                    } else if (entry.contains("assets/www/cordova.js") || entry.contains("assets/www/index.html")) {
+                        framework = "Cordova"
+                    }
+                    
+                    if (entry.contains("libjiagu.so") || entry.contains("libjiagu_art.so")) {
+                        packer = "Qihoo 360 (Jiagu)"
+                    } else if (entry.contains("libshell.so") || entry.contains("libtx3g.so")) {
+                        packer = "Tencent Legu"
+                    } else if (entry.contains("libsecapk.so") || entry.contains("libsecexe.so")) {
+                        packer = "Bangcle (SecApk)"
+                    } else if (entry.contains("libbaiduprotect.so")) {
+                        packer = "Baidu Protect"
                     }
                 }
 
                 // 3. Initialize DecompilerEngine to calculate Obfuscation Score
-                DecompilerEngine.init(apkPath, cacheDir)
+                DecompilerEngine.init(appInfo.sourceDir, cacheDir)
                 val classes = DecompilerEngine.getClassList()
                 
                 var obfuscationScore = 0
@@ -385,8 +430,9 @@ class ApkDetailsActivity : AppCompatActivity() {
 
                 // Double check packer detection via native libraries
                 var detectedPacker = packer
-                val nativeLibEntries = entriesList.filter { it.startsWith("lib/") && it.endsWith(".so") }
-                for (entry in nativeLibEntries) {
+                val nativeLibEntries = entriesList.filter { it.second.startsWith("lib/") && it.second.endsWith(".so") }
+                for (pair in nativeLibEntries) {
+                    val entry = pair.second
                     if (entry.contains("libjiagu.so") || entry.contains("libjiagu_art.so")) {
                         detectedPacker = "Qihoo 360 (Jiagu)"
                     } else if (entry.contains("libshell.so") || entry.contains("libtx3g.so")) {
@@ -404,7 +450,8 @@ class ApkDetailsActivity : AppCompatActivity() {
                     obfuscatorTech = "Packer ($detectedPacker)"
                     obfuscationScore = maxOf(obfuscationScore, 95)
                 } else {
-                    for (entry in entriesList) {
+                    for (pair in entriesList) {
+                        val entry = pair.second
                         if (entry.contains("libdexprotector") || entry.contains("libdp.so")) {
                             detectedPacker = "DexProtector"
                             obfuscatorTech = "DexProtector / DexGuard"
@@ -413,14 +460,14 @@ class ApkDetailsActivity : AppCompatActivity() {
                     }
                 }
                 
-                // Audit native mitigations
-                val targetAbi = if (nativeLibEntries.any { it.contains("arm64-v8a") }) "arm64-v8a" else if (nativeLibEntries.any { it.contains("armeabi-v7a") }) "armeabi-v7a" else ""
+                // Audit native mitigations across correct split APK files
+                val targetAbi = if (nativeLibEntries.any { it.second.contains("arm64-v8a") }) "arm64-v8a" else if (nativeLibEntries.any { it.second.contains("armeabi-v7a") }) "armeabi-v7a" else ""
                 val libsToAudit = if (targetAbi.isNotEmpty()) {
-                    nativeLibEntries.filter { it.contains(targetAbi) }
+                    nativeLibEntries.filter { it.second.contains(targetAbi) }
                 } else {
                     nativeLibEntries.take(5)
                 }
-                val auditedLibs = libsToAudit.mapNotNull { auditNativeLibrary(apkPath, it) }
+                val auditedLibs = libsToAudit.mapNotNull { pair -> auditNativeLibrary(pair.first, pair.second) }
 
                 // Update UI on main thread
                 runOnUiThread {
