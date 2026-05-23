@@ -109,11 +109,12 @@ class GeneralToolsActivity : AppCompatActivity() {
 
         // Register local broadcast receiver to monitor foreground service destruction events in real-time
         val filter = IntentFilter(ForegroundTrackerService.ACTION_TRACKER_STOPPED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(trackerStopReceiver, filter, RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(trackerStopReceiver, filter)
-        }
+        androidx.core.content.ContextCompat.registerReceiver(
+            this,
+            trackerStopReceiver,
+            filter,
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -259,6 +260,7 @@ class GeneralToolsActivity : AppCompatActivity() {
         Toast.makeText(this, "Active App & Class Tracker stopped.", Toast.LENGTH_SHORT).show()
     }
 
+    @Suppress("DEPRECATION")
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         for (service in manager.getRunningServices(Integer.MAX_VALUE)) {

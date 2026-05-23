@@ -32,7 +32,6 @@ class ApkDetailsActivity : AppCompatActivity() {
         val tvDebuggable = findViewById<TextView>(R.id.tvDebuggable)
         val tvAllowBackup = findViewById<TextView>(R.id.tvAllowBackup)
         val tvCleartext = findViewById<TextView>(R.id.tvCleartext)
-        val tvNetworkSecurity = findViewById<TextView>(R.id.tvNetworkSecurity)
         val tvSharedUid = findViewById<TextView>(R.id.tvSharedUid)
         val tvAppUid = findViewById<TextView>(R.id.tvAppUid)
         val tvCompActivities = findViewById<TextView>(R.id.tvCompActivities)
@@ -41,6 +40,10 @@ class ApkDetailsActivity : AppCompatActivity() {
         val tvCompProviders = findViewById<TextView>(R.id.tvCompProviders)
         val tvSignature = findViewById<TextView>(R.id.tvSignature)
         val btnViewManifest = findViewById<android.widget.Button>(R.id.btnViewManifest)
+        val tvFrameworkPacker = findViewById<TextView>(R.id.tvFrameworkPacker)
+        val tvObfuscationScore = findViewById<TextView>(R.id.tvObfuscationScore)
+        val tvTechnology = findViewById<TextView>(R.id.tvTechnology)
+        tvTechnology.text = "Technology: Scanning..."
 
         tvPackageNameHeader.text = packageName
 
@@ -107,7 +110,7 @@ class ApkDetailsActivity : AppCompatActivity() {
                 val tvDebuggableRisk = findViewById<TextView>(R.id.tvDebuggableRisk)
                 val tvAllowBackupRisk = findViewById<TextView>(R.id.tvAllowBackupRisk)
                 val tvCleartextRisk = findViewById<TextView>(R.id.tvCleartextRisk)
-                val tvNetworkSecurityRisk = findViewById<TextView>(R.id.tvNetworkSecurityRisk)
+
 
                 val isDebug = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
                 val isBackup = (appInfo.flags and android.content.pm.ApplicationInfo.FLAG_ALLOW_BACKUP) != 0
@@ -150,29 +153,7 @@ class ApkDetailsActivity : AppCompatActivity() {
                     tvCleartextRisk.visibility = android.view.View.GONE
                 }
 
-                val hasNetworkConfig = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    try {
-                        // Use dynamic string lookup to bypass static commit linter blocking.
-                        // Runtime exception is gracefully handled by the enclosing catch block.
-                        val fieldName = "networkSecurityConfigRes"
-                        val field = appInfo.javaClass.getDeclaredField(fieldName)
-                        field.isAccessible = true
-                        field.getInt(appInfo) != 0
-                    } catch (e: Exception) {
-                        false
-                    }
-                } else {
-                    false
-                }
-                tvNetworkSecurity.text = "Network Security Config: ${if (hasNetworkConfig) "Custom Rules Defined" else "Not Defined"}"
-                tvNetworkSecurity.setTextColor(if (hasNetworkConfig) android.graphics.Color.WHITE else android.graphics.Color.YELLOW)
-                if (!hasNetworkConfig) {
-                    tvNetworkSecurityRisk.visibility = android.view.View.VISIBLE
-                    tvNetworkSecurityRisk.text = "Implication: Network security rules not defined. App trusts system anchors only, but is susceptible to MitM if cleartext is allowed."
-                } else {
-                    tvNetworkSecurityRisk.visibility = android.view.View.GONE
-                }
-                
+
                 tvSharedUid.text = "Shared User ID: ${packageInfo.sharedUserId ?: "None"}"
                 tvAppUid.text = "Application UID: ${appInfo.uid}"
 
@@ -229,6 +210,21 @@ class ApkDetailsActivity : AppCompatActivity() {
                 tvCompProviders.text = "Providers: $provCount ($provExportedCount exported, $provUnprotectedCount unprotected)"
             }
 
+            val dangerousList = mutableListOf<String>()
+            val signatureList = mutableListOf<String>()
+            val normalList = mutableListOf<String>()
+
+            val dangerousPerms = setOf(
+                "android.permission.READ_SMS", "android.permission.SEND_SMS", "android.permission.RECEIVE_SMS",
+                "android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION",
+                "android.permission.RECORD_AUDIO", "android.permission.CAMERA",
+                "android.permission.READ_CONTACTS", "android.permission.WRITE_CONTACTS",
+                "android.permission.READ_PHONE_STATE", "android.permission.CALL_PHONE",
+                "android.permission.READ_CALL_LOG", "android.permission.WRITE_CALL_LOG",
+                "android.permission.READ_EXTERNAL_STORAGE", "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.MANAGE_EXTERNAL_STORAGE", "android.permission.QUERY_ALL_PACKAGES"
+            )
+
             if (packageInfo.requestedPermissions != null) {
                 for (i in packageInfo.requestedPermissions.indices) {
                     val perm = packageInfo.requestedPermissions[i]
@@ -238,13 +234,68 @@ class ApkDetailsActivity : AppCompatActivity() {
                         false
                     }
                     
-                    val permView = TextView(this).apply {
-                        text = if (isGranted) "✓ $perm" else "✗ $perm"
-                        setTextColor(if (isGranted) android.graphics.Color.parseColor("#4CAF50") else android.graphics.Color.parseColor("#F44336"))
-                        textSize = 14f
-                        setPadding(0, 4, 0, 4)
+                    val statusStr = if (isGranted) "✓" else "✗"
+                    val entryText = "$statusStr ${perm.substringAfterLast('.')}"
+                    val entryColor = if (isGranted) "#4CAF50" else "#F44336"
+                    
+                    if (dangerousPerms.contains(perm)) {
+                        dangerousList.add("<font color='$entryColor'>$entryText</font>")
+                    } else if (perm.contains("signature", ignoreCase = true) || perm.contains("system", ignoreCase = true)) {
+                        signatureList.add("<font color='$entryColor'>$entryText</font>")
+                    } else {
+                        normalList.add("<font color='$entryColor'>$entryText</font>")
                     }
-                    llPermissions.addView(permView)
+                }
+
+                if (dangerousList.isNotEmpty()) {
+                    llPermissions.addView(TextView(this).apply {
+                        text = "🔴 DANGEROUS / PRIVACY PERMISSIONS:"
+                        setTextColor(android.graphics.Color.parseColor("#FF5722"))
+                        textSize = 14f
+                        setTypeface(null, android.graphics.Typeface.BOLD)
+                        setPadding(0, 8, 0, 4)
+                    })
+                    for (p in dangerousList) {
+                        llPermissions.addView(TextView(this).apply {
+                            text = android.text.Html.fromHtml(p, android.text.Html.FROM_HTML_MODE_LEGACY)
+                            textSize = 13f
+                            setPadding(12, 2, 0, 2)
+                        })
+                    }
+                }
+
+                if (signatureList.isNotEmpty()) {
+                    llPermissions.addView(TextView(this).apply {
+                        text = "🟡 SIGNATURE / ELEVATED PERMISSIONS:"
+                        setTextColor(android.graphics.Color.parseColor("#FFEB3B"))
+                        textSize = 14f
+                        setTypeface(null, android.graphics.Typeface.BOLD)
+                        setPadding(0, 8, 0, 4)
+                    })
+                    for (p in signatureList) {
+                        llPermissions.addView(TextView(this).apply {
+                            text = android.text.Html.fromHtml(p, android.text.Html.FROM_HTML_MODE_LEGACY)
+                            textSize = 13f
+                            setPadding(12, 2, 0, 2)
+                        })
+                    }
+                }
+
+                if (normalList.isNotEmpty()) {
+                    llPermissions.addView(TextView(this).apply {
+                        text = "🟢 NORMAL / UTILITY PERMISSIONS:"
+                        setTextColor(android.graphics.Color.parseColor("#4CAF50"))
+                        textSize = 14f
+                        setTypeface(null, android.graphics.Typeface.BOLD)
+                        setPadding(0, 8, 0, 4)
+                    })
+                    for (p in normalList) {
+                        llPermissions.addView(TextView(this).apply {
+                            text = android.text.Html.fromHtml(p, android.text.Html.FROM_HTML_MODE_LEGACY)
+                            textSize = 13f
+                            setPadding(12, 2, 0, 2)
+                        })
+                    }
                 }
             } else {
                 llPermissions.addView(TextView(this).apply {
@@ -252,6 +303,156 @@ class ApkDetailsActivity : AppCompatActivity() {
                     setTextColor(android.graphics.Color.WHITE)
                 })
             }
+
+            // Asynchronous premium audits for Modules 1, 2, and 4
+            Thread {
+                val apkPath = appInfo.sourceDir
+                val cacheDir = cacheDir
+                
+                // 1. Detect Framework and Packer
+                val fwPacker = detectFrameworkAndPacker(apkPath)
+                val framework = fwPacker.first
+                val packer = fwPacker.second
+                
+                // 2. Scan ZIP entries to locate native libraries
+                val entriesList = mutableListOf<String>()
+                try {
+                    java.util.zip.ZipFile(apkPath).use { zip ->
+                        val entries = zip.entries()
+                        while (entries.hasMoreElements()) {
+                            entriesList.add(entries.nextElement().name)
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Fallback to unzip -l via root
+                    try {
+                        val process = Runtime.getRuntime().exec("su")
+                        val os = java.io.DataOutputStream(process.outputStream)
+                        os.writeBytes("unzip -l \"$apkPath\"\n")
+                        os.writeBytes("exit\n")
+                        os.flush()
+                        
+                        val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                        var line: String?
+                        while (reader.readLine().also { line = it } != null) {
+                            val parts = line!!.trim().split(Regex("\\s+"))
+                            if (parts.size >= 4) {
+                                val name = parts.subList(3, parts.size).joinToString(" ")
+                                entriesList.add(name)
+                            }
+                        }
+                        process.waitFor()
+                    } catch (ex: Exception) {
+                        ex.printStackTrace()
+                    }
+                }
+
+                // 3. Initialize DecompilerEngine to calculate Obfuscation Score
+                DecompilerEngine.init(apkPath, cacheDir)
+                val classes = DecompilerEngine.getClassList()
+                
+                var obfuscationScore = 0
+                var obfuscatorTech = "None detected (Clean)"
+                
+                if (classes.isNotEmpty()) {
+                    var obfuscatedCount = 0
+                    var singleLetterCount = 0
+                    val alphabeticRenames = setOf("a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z")
+                    
+                    for (className in classes) {
+                        val simpleName = className.substringAfterLast('.')
+                        if (simpleName.length <= 2) {
+                            obfuscatedCount++
+                            if (alphabeticRenames.contains(simpleName.lowercase(java.util.Locale.getDefault()))) {
+                                singleLetterCount++
+                            }
+                        }
+                        if (className.contains("ALLATORI_DEMO", ignoreCase = true)) {
+                            obfuscatorTech = "Allatori Obfuscator"
+                        }
+                    }
+                    
+                    obfuscationScore = (obfuscatedCount * 100) / classes.size
+                    
+                    if (obfuscatorTech == "None detected (Clean)" && obfuscationScore > 30) {
+                        if (singleLetterCount > (obfuscatedCount * 0.7)) {
+                            obfuscatorTech = "R8 / ProGuard"
+                        } else {
+                            obfuscatorTech = "Generic Class Renaming"
+                        }
+                    }
+                }
+
+                // Double check packer detection via native libraries
+                var detectedPacker = packer
+                val nativeLibEntries = entriesList.filter { it.startsWith("lib/") && it.endsWith(".so") }
+                for (entry in nativeLibEntries) {
+                    if (entry.contains("libjiagu.so") || entry.contains("libjiagu_art.so")) {
+                        detectedPacker = "Qihoo 360 (Jiagu)"
+                    } else if (entry.contains("libshell.so") || entry.contains("libtx3g.so")) {
+                        detectedPacker = "Tencent Legu"
+                    } else if (entry.contains("libsecapk.so") || entry.contains("libsecexe.so")) {
+                        detectedPacker = "Bangcle (SecApk)"
+                    } else if (entry.contains("libbaiduprotect.so")) {
+                        detectedPacker = "Baidu Protect"
+                    } else if (entry.contains("libdexprotector.so") || entry.contains("libdp.so")) {
+                        detectedPacker = "DexProtector"
+                    }
+                }
+                
+                if (detectedPacker != "None detected (Clean)") {
+                    obfuscatorTech = "Packer ($detectedPacker)"
+                    obfuscationScore = maxOf(obfuscationScore, 95)
+                } else {
+                    for (entry in entriesList) {
+                        if (entry.contains("libdexprotector") || entry.contains("libdp.so")) {
+                            detectedPacker = "DexProtector"
+                            obfuscatorTech = "DexProtector / DexGuard"
+                            obfuscationScore = maxOf(obfuscationScore, 95)
+                        }
+                    }
+                }
+                
+                // Audit native mitigations
+                val targetAbi = if (nativeLibEntries.any { it.contains("arm64-v8a") }) "arm64-v8a" else if (nativeLibEntries.any { it.contains("armeabi-v7a") }) "armeabi-v7a" else ""
+                val libsToAudit = if (targetAbi.isNotEmpty()) {
+                    nativeLibEntries.filter { it.contains(targetAbi) }
+                } else {
+                    nativeLibEntries.take(5)
+                }
+                val auditedLibs = libsToAudit.mapNotNull { auditNativeLibrary(apkPath, it) }
+
+                // Update UI on main thread
+                runOnUiThread {
+                    tvTechnology.text = "Technology: $framework"
+                    tvFrameworkPacker.text = "Protector/Packer: $detectedPacker"
+                    
+                    val scoreText = "Obfuscation Score: $obfuscationScore% (${if (obfuscationScore > 50) "Highly Obfuscated" else if (obfuscationScore > 15) "Moderately Obfuscated" else "Low/No Obfuscation"})"
+                    val techText = if (obfuscationScore > 15) " | Method: $obfuscatorTech" else ""
+                    tvObfuscationScore.text = "$scoreText$techText"
+                    tvObfuscationScore.setTextColor(if (obfuscationScore > 50) android.graphics.Color.parseColor("#FF5722") else if (obfuscationScore > 15) android.graphics.Color.parseColor("#FFEB3B") else android.graphics.Color.WHITE)
+
+                    if (auditedLibs.isNotEmpty()) {
+                        findViewById<androidx.cardview.widget.CardView>(R.id.cardNativeLibs).visibility = android.view.View.VISIBLE
+                        val llNativeLibs = findViewById<android.widget.LinearLayout>(R.id.llNativeLibs)
+                        llNativeLibs.removeAllViews()
+                        
+                        for (lib in auditedLibs) {
+                            val view = TextView(this@ApkDetailsActivity).apply {
+                                val pieText = if (lib.hasPie) "<font color='#4CAF50'>PIE</font>" else "<font color='#F44336'>No PIE</font>"
+                                val canaryText = if (lib.hasCanary) "<font color='#4CAF50'>Canary</font>" else "<font color='#F44336'>No Canary</font>"
+                                val nxText = if (lib.hasNx) "<font color='#4CAF50'>NX</font>" else "<font color='#F44336'>No NX</font>"
+                                
+                                text = android.text.Html.fromHtml("<b>${lib.name}</b>: $pieText | $canaryText | $nxText", android.text.Html.FROM_HTML_MODE_LEGACY)
+                                setTextColor(android.graphics.Color.WHITE)
+                                textSize = 13f
+                                setPadding(0, 4, 0, 4)
+                            }
+                            llNativeLibs.addView(view)
+                        }
+                    }
+                }
+            }.start()
 
         } catch (e: PackageManager.NameNotFoundException) {
             tvVersion.text = "Error: Package not found"
@@ -310,5 +511,188 @@ class ApkDetailsActivity : AppCompatActivity() {
         val clip = android.content.ClipData.newPlainText(label, text)
         clipboard.setPrimaryClip(clip)
         android.widget.Toast.makeText(this, "Command copied to clipboard", android.widget.Toast.LENGTH_SHORT).show()
+    }
+
+    private data class NativeMitigations(
+        val name: String,
+        val hasPie: Boolean,
+        val hasCanary: Boolean,
+        val hasNx: Boolean
+    )
+
+    private fun detectFrameworkAndPacker(apkPath: String): Pair<String, String> {
+        var framework = "Native (Java/Kotlin)"
+        var packer = "None detected (Clean)"
+        val entriesList = mutableListOf<String>()
+        
+        try {
+            java.util.zip.ZipFile(apkPath).use { zip ->
+                val entries = zip.entries()
+                while (entries.hasMoreElements()) {
+                    entriesList.add(entries.nextElement().name)
+                }
+            }
+        } catch (e: Exception) {
+            try {
+                val process = Runtime.getRuntime().exec("su")
+                val os = java.io.DataOutputStream(process.outputStream)
+                os.writeBytes("unzip -l \"$apkPath\"\n")
+                os.writeBytes("exit\n")
+                os.flush()
+                
+                val reader = java.io.BufferedReader(java.io.InputStreamReader(process.inputStream))
+                var line: String?
+                while (reader.readLine().also { line = it } != null) {
+                    val parts = line!!.trim().split(Regex("\\s+"))
+                    if (parts.size >= 4) {
+                        val name = parts.subList(3, parts.size).joinToString(" ")
+                        entriesList.add(name)
+                    }
+                }
+                process.waitFor()
+            } catch (ex: Exception) {}
+        }
+
+        for (entry in entriesList) {
+            if (entry.contains("libflutter.so") || entry.contains("libapp.so")) {
+                framework = "Flutter"
+            } else if (entry.contains("libreactnativejni.so") || entry.contains("index.android.bundle")) {
+                framework = "React Native"
+            } else if (entry.contains("libmonodroid.so") || entry.contains("libmonosgen-2.0.so")) {
+                framework = "Xamarin"
+            } else if (entry.contains("libunity.so") || entry.contains("libmain.so")) {
+                framework = "Unity"
+            } else if (entry.contains("assets/www/cordova.js") || entry.contains("assets/www/index.html")) {
+                framework = "Cordova"
+            }
+            
+            if (entry.contains("libjiagu.so") || entry.contains("libjiagu_art.so")) {
+                packer = "Qihoo 360 (Jiagu)"
+            } else if (entry.contains("libshell.so") || entry.contains("libtx3g.so")) {
+                packer = "Tencent Legu"
+            } else if (entry.contains("libsecapk.so") || entry.contains("libsecexe.so")) {
+                packer = "Bangcle (SecApk)"
+            } else if (entry.contains("libbaiduprotect.so")) {
+                packer = "Baidu Protect"
+            }
+        }
+        return Pair(framework, packer)
+    }
+
+    private fun auditNativeLibrary(apkPath: String, entryName: String): NativeMitigations? {
+        val maxBytes = 65536
+        val buffer = ByteArray(maxBytes)
+        var bytesRead: Int
+        
+        try {
+            java.util.zip.ZipFile(apkPath).use { zip ->
+                val entry = zip.getEntry(entryName) ?: return null
+                zip.getInputStream(entry).use { stream ->
+                    bytesRead = stream.read(buffer)
+                }
+            }
+        } catch (e: Exception) {
+            try {
+                val process = Runtime.getRuntime().exec("su")
+                val os = java.io.DataOutputStream(process.outputStream)
+                os.writeBytes("unzip -p \"$apkPath\" \"$entryName\"\n")
+                os.writeBytes("exit\n")
+                os.flush()
+                
+                val stream = process.inputStream
+                bytesRead = stream.read(buffer)
+                process.waitFor()
+            } catch (ex: Exception) {
+                return null
+            }
+        }
+
+        if (bytesRead < 54) return null
+        if (buffer[0] != 0x7F.toByte() || buffer[1] != 0x45.toByte() || buffer[2] != 0x4C.toByte() || buffer[3] != 0x46.toByte()) {
+            return null
+        }
+
+        val is64Bit = buffer[4] == 2.toByte()
+        val typeLow = buffer[16].toInt() and 0xFF
+        val typeHigh = buffer[17].toInt() and 0xFF
+        val elfType = (typeHigh shl 8) or typeLow
+        val hasPie = elfType == 3
+
+        val canaryString = "__stack_chk_fail"
+        val canaryBytes = canaryString.toByteArray(Charsets.US_ASCII)
+        val hasCanary = indexOfBytes(buffer, canaryBytes, bytesRead) != -1
+
+        val phoff = if (is64Bit) {
+            readLongLE(buffer, 32)
+        } else {
+            readIntLE(buffer, 28).toLong()
+        }
+        
+        val phnum = if (is64Bit) {
+            readShortLE(buffer, 56)
+        } else {
+            readShortLE(buffer, 44)
+        }
+
+        val phentsize = if (is64Bit) {
+            readShortLE(buffer, 54)
+        } else {
+            readShortLE(buffer, 42)
+        }
+
+        var hasNx = true
+        try {
+            val ptGnuStackType = 0x6474e551L
+            for (i in 0 until phnum) {
+                val offset = (phoff + i * phentsize).toInt()
+                if (offset + phentsize > bytesRead) break
+                val pType = readIntLE(buffer, offset).toLong() and 0xFFFFFFFFL
+                if (pType == ptGnuStackType) {
+                    val pFlagsOffset = if (is64Bit) offset + 4 else offset + 24
+                    val pFlags = readIntLE(buffer, pFlagsOffset)
+                    if ((pFlags and 1) != 0) {
+                        hasNx = false
+                    }
+                    break
+                }
+            }
+        } catch (e: Exception) {}
+
+        val simpleName = entryName.substringAfterLast('/')
+        return NativeMitigations(simpleName, hasPie, hasCanary, hasNx)
+    }
+
+    private fun readIntLE(buffer: ByteArray, offset: Int): Int {
+        return (buffer[offset].toInt() and 0xFF) or
+               ((buffer[offset + 1].toInt() and 0xFF) shl 8) or
+               ((buffer[offset + 2].toInt() and 0xFF) shl 16) or
+               ((buffer[offset + 3].toInt() and 0xFF) shl 24)
+    }
+
+    private fun readShortLE(buffer: ByteArray, offset: Int): Int {
+        return (buffer[offset].toInt() and 0xFF) or
+               ((buffer[offset + 1].toInt() and 0xFF) shl 8)
+    }
+
+    private fun readLongLE(buffer: ByteArray, offset: Int): Long {
+        var value = 0L
+        for (i in 0 until 8) {
+            value = value or ((buffer[offset + i].toLong() and 0xFF) shl (i * 8))
+        }
+        return value
+    }
+
+    private fun indexOfBytes(data: ByteArray, pattern: ByteArray, limit: Int): Int {
+        for (i in 0..limit - pattern.size) {
+            var match = true
+            for (j in pattern.indices) {
+                if (data[i + j] != pattern[j]) {
+                    match = false
+                    break
+                }
+            }
+            if (match) return i
+        }
+        return -1
     }
 }

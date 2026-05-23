@@ -40,6 +40,13 @@ class InspectPackageActivity : AppCompatActivity() {
             }
         }
 
+        findViewById<Button>(R.id.btnSecretsAuditor).setOnClickListener {
+            val intent = Intent(this, SecretsAuditorActivity::class.java)
+            intent.putExtra("PACKAGE_NAME", packageName)
+            startActivity(intent)
+        }
+
+
         findViewById<Button>(R.id.btnDumpApk).setOnClickListener {
             extractApk(packageName, share = false)
         }
@@ -54,11 +61,30 @@ class InspectPackageActivity : AppCompatActivity() {
     }
 
     private fun decompileApp(packageName: String) {
-        val progressDialog = android.app.ProgressDialog(this).apply {
-            setMessage("Initializing decompiler...\nThis may take a few seconds.")
-            setCancelable(false)
-            show()
+        val padding = (24 * resources.displayMetrics.density).toInt()
+        val spacing = (16 * resources.displayMetrics.density).toInt()
+        
+        val progressLayout = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.HORIZONTAL
+            setPadding(padding, padding, padding, padding)
+            gravity = android.view.Gravity.CENTER_VERTICAL
         }
+        val progressBar = android.widget.ProgressBar(this).apply {
+            isIndeterminate = true
+        }
+        val tvMessage = TextView(this).apply {
+            text = "Initializing decompiler...\nThis may take a few seconds."
+            setPadding(spacing, 0, 0, 0)
+            textSize = 14f
+        }
+        progressLayout.addView(progressBar)
+        progressLayout.addView(tvMessage)
+        
+        val progressDialog = androidx.appcompat.app.AlertDialog.Builder(this)
+            .setView(progressLayout)
+            .setCancelable(false)
+            .create()
+        progressDialog.show()
 
         Thread {
             try {
@@ -69,13 +95,12 @@ class InspectPackageActivity : AppCompatActivity() {
                 var apkToUse = sourceFile.absolutePath
                 
                 // Try reading directly first (no root required)
-                var readable = false
-                try {
+                val readable = try {
                     val stream = java.io.FileInputStream(sourceFile)
                     stream.close()
-                    readable = true
+                    true
                 } catch (e: Exception) {
-                    readable = false
+                    false
                 }
                 
                 if (!readable) {
@@ -138,9 +163,10 @@ class InspectPackageActivity : AppCompatActivity() {
 
                 val extractedUris = ArrayList<android.net.Uri>()
                 var successCount = 0
+                @Suppress("DEPRECATION")
                 val downloadsDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
 
-                allApks.forEachIndexed { index, apkPath ->
+                allApks.forEach { apkPath ->
                     val sourceFile = java.io.File(apkPath)
                     val fileName = sourceFile.name
                     

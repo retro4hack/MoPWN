@@ -19,7 +19,6 @@ import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import java.io.File
 
 class SourceViewerActivity : AppCompatActivity() {
 
@@ -45,7 +44,16 @@ class SourceViewerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_source_viewer)
 
-        val classFullName = intent.getStringExtra("CLASS_FULL_NAME") ?: return
+        val rawClassFullName = intent.getStringExtra("CLASS_FULL_NAME") ?: return
+
+        // Handle inner classes, anonymous classes and lambdas with $ sign
+        // Since JADX merges inner classes directly into the parent outer class file,
+        // we decompile the outer class parent (e.g. com.app.Main$1 -> com.app.Main).
+        val classFullName = if (rawClassFullName.contains("$")) {
+            rawClassFullName.substringBefore("$")
+        } else {
+            rawClassFullName
+        }
 
         tvClassTitle = findViewById(R.id.tvClassTitle)
         tvClassSubtitle = findViewById(R.id.tvClassSubtitle)
@@ -60,7 +68,7 @@ class SourceViewerActivity : AppCompatActivity() {
 
         val simpleName = classFullName.substringAfterLast('.')
         tvClassTitle.text = "$simpleName.java"
-        tvClassSubtitle.text = classFullName
+        tvClassSubtitle.text = rawClassFullName
 
         btnCopyCode.setOnClickListener {
             val code = decompiledCode
@@ -101,6 +109,12 @@ class SourceViewerActivity : AppCompatActivity() {
             }
         }
 
+        // Check if an auto-search query was passed from DEX static auditor
+        val initialSearchQuery = intent.getStringExtra("SEARCH_QUERY")
+        if (initialSearchQuery != null) {
+            etCodeSearch.setText(initialSearchQuery)
+        }
+
         // Run decompilation in background thread to keep UI interactive
         Thread {
             val result = DecompilerEngine.decompileClass(classFullName)
@@ -112,7 +126,7 @@ class SourceViewerActivity : AppCompatActivity() {
                 if (result.contains("Fallback Mode")) {
                     tvClassTitle.text = "$simpleName.java (Fallback Mode)"
                 }
-                // If user had already typed something in search, rerun search
+                // Execute initial search once code is decompiled
                 performSearch(etCodeSearch.text.toString())
             }
         }.start()
@@ -126,14 +140,48 @@ class SourceViewerActivity : AppCompatActivity() {
         // Skip searching if query is too short (less than 2 characters)
         // This avoids freezing the UI on common letters like "e", "a", "i" etc.
         if (code != null && query.length >= 2) {
+            val lowercaseQuery = query.lowercase()
+            val isSearchingHeader = lowercaseQuery.startsWith("import") || lowercaseQuery.startsWith("package")
+            
             var index = code.indexOf(query, ignoreCase = true)
             while (index >= 0) {
-                matchIndices.add(Pair(index, index + query.length))
+                val lineStart = findLineStart(code, index)
+                val lineEnd = findLineEnd(code, index)
+                val lineText = code.substring(lineStart, lineEnd).trim()
+                
+                // Smart DX Filtering: Ignore JADX metadata headers, package, and import declarations 
+                // to avoid noise matches at the top of the file, unless the user is specifically searching for them.
+                val shouldSkip = !isSearchingHeader && (
+                    lineText.startsWith("package ") || 
+                    lineText.startsWith("import ") || 
+                    lineText.startsWith("/*") && lineText.contains("JADX") ||
+                    lineText.startsWith("// Class:")
+                )
+                
+                if (!shouldSkip) {
+                    matchIndices.add(Pair(index, index + query.length))
+                }
                 index = code.indexOf(query, index + query.length, ignoreCase = true)
             }
         }
         
         highlightMatches()
+    }
+
+    private fun findLineStart(text: String, index: Int): Int {
+        var i = index
+        while (i > 0 && text[i - 1] != '\n') {
+            i--
+        }
+        return i
+    }
+
+    private fun findLineEnd(text: String, index: Int): Int {
+        var i = index
+        while (i < text.length && text[i] != '\n') {
+            i++
+        }
+        return i
     }
 
     private fun highlightMatches() {

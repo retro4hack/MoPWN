@@ -136,6 +136,7 @@ class FileBrowserActivity : AppCompatActivity() {
         btnShareSelected.isEnabled = count > 0
     }
 
+    @Suppress("DEPRECATION")
     override fun onBackPressed() {
         if (isSelectionModeActive) {
             // Back button cancels selection mode first

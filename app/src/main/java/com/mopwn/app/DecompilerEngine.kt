@@ -2,7 +2,6 @@ package com.mopwn.app
 
 import jadx.api.JadxArgs
 import jadx.api.JadxDecompiler
-import jadx.api.ResourceFile
 import jadx.api.ResourceType
 import java.io.File
 
@@ -12,6 +11,7 @@ object DecompilerEngine {
     private val classList = ArrayList<String>()
 
     @Synchronized
+    @Suppress("DEPRECATION")
     fun init(apkPath: String, cacheDir: File): String? {
         if (cachedApkPath == apkPath && classList.isNotEmpty()) {
             return null
@@ -94,6 +94,7 @@ object DecompilerEngine {
         return result
     }
 
+    @Suppress("DEPRECATION")
     private fun decompileFile(file: File, classFullName: String): String {
         // Outer Class Resolution: In JADX, inner classes (e.g. MyClass$1, MyClass$Inner) 
         // are nested within their top-level parent class and are not exposed in the flat dec.classes list.
@@ -171,7 +172,14 @@ object DecompilerEngine {
     }
 
     private fun findAndExtractMatchingDexFiles(apkPath: String, classFullName: String, cacheDir: File): File? {
-        val pathStyle = classFullName.replace('.', '/')
+        // Resolve inner class containing $ to outer class descriptor for search mapping
+        val topLevelClassFullName = if (classFullName.contains('$')) {
+            classFullName.substringBefore('$')
+        } else {
+            classFullName
+        }
+        
+        val pathStyle = topLevelClassFullName.replace('.', '/')
         val descriptorStyle = "L$pathStyle;"
         val searchBytes = descriptorStyle.toByteArray(Charsets.UTF_8)
         
@@ -235,11 +243,10 @@ object DecompilerEngine {
         val sourceFile = File(baseApkPath)
         
         var apkToUse = sourceFile.absolutePath
-        var readable = false
-        try {
-            java.io.FileInputStream(sourceFile).use { readable = true }
+        val readable = try {
+            java.io.FileInputStream(sourceFile).use { true }
         } catch (e: Exception) {
-            readable = false
+            false
         }
         
         if (!readable) {

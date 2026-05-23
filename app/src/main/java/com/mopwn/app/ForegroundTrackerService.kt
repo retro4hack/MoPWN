@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
+import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
@@ -52,11 +53,12 @@ class ForegroundTrackerService : Service() {
 
         // Register local broadcast receiver to handle notification button actions
         val filter = IntentFilter(INTENT_ACTION_CONTROL)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(controlReceiver, filter, RECEIVER_NOT_EXPORTED)
-        } else {
-            registerReceiver(controlReceiver, filter)
-        }
+        androidx.core.content.ContextCompat.registerReceiver(
+            this,
+            controlReceiver,
+            filter,
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         isTracking = true
         startPersistentRootTracker()
@@ -64,7 +66,16 @@ class ForegroundTrackerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val notification = buildTrackerNotification("Auditing screen...", "Detecting active screen/class in background...")
-        startForeground(NOTIFICATION_ID, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(
+                NOTIFICATION_ID, 
+                notification, 
+                android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            startForeground(NOTIFICATION_ID, notification)
+        }
         return START_NOT_STICKY
     }
 
@@ -82,6 +93,7 @@ class ForegroundTrackerService : Service() {
         val stopBroadcast = Intent(ACTION_TRACKER_STOPPED)
         sendBroadcast(stopBroadcast)
         
+        @Suppress("DEPRECATION")
         stopForeground(true)
     }
 
@@ -252,20 +264,18 @@ class ForegroundTrackerService : Service() {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Foreground Tracker Service Channel",
-                NotificationManager.IMPORTANCE_LOW
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel)
-        }
+        val serviceChannel = NotificationChannel(
+            CHANNEL_ID,
+            "Foreground Tracker Service Channel",
+            NotificationManager.IMPORTANCE_LOW
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(serviceChannel)
     }
 
     private fun copyToClipboard(context: Context, text: String, message: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = android.content.ClipData.newPlainText("MoPWN Tracker", text)
+        val clip = ClipData.newPlainText("MoPWN Tracker", text)
         clipboard.setPrimaryClip(clip)
         
         Handler(Looper.getMainLooper()).post {

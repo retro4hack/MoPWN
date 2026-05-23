@@ -55,8 +55,15 @@
                 android:id="@+id/btnExportedActivities"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:text="@string/view_exported_activities" />
+
+            <Button
+                android:id="@+id/btnSecretsAuditor"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="24dp"
+                android:text="Secrets &amp; Hardcoded Strings" />
                 
             <View
                 android:layout_width="match_parent"
@@ -81,6 +88,9 @@
                 android:layout_marginBottom="16dp"
                 android:backgroundTint="#AA2222"
                 android:text="Browse App Data (/data/data/)" />
+
+
+
 
             <LinearLayout
                 android:layout_width="match_parent"

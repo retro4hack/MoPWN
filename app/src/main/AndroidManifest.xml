@@ -8,6 +8,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
@@ -45,6 +46,7 @@
         <activity android:name=".ManifestViewerActivity" />
         <activity android:name=".GeneralToolsActivity" />
         <activity android:name=".FridaManagerActivity" />
+        <activity android:name=".SecretsAuditorActivity" />
         
         <service 
             android:name=".ForegroundTrackerService"
