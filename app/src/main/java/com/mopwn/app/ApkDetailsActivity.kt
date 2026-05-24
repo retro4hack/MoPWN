@@ -39,7 +39,6 @@ class ApkDetailsActivity : AppCompatActivity() {
         val tvCompServices = findViewById<TextView>(R.id.tvCompServices)
         val tvCompReceivers = findViewById<TextView>(R.id.tvCompReceivers)
         val tvCompProviders = findViewById<TextView>(R.id.tvCompProviders)
-        val tvSignature = findViewById<TextView>(R.id.tvSignature)
         val btnViewManifest = findViewById<android.widget.Button>(R.id.btnViewManifest)
         val tvFrameworkPacker = findViewById<TextView>(R.id.tvFrameworkPacker)
         val tvObfuscationScore = findViewById<TextView>(R.id.tvObfuscationScore)
@@ -172,9 +171,6 @@ class ApkDetailsActivity : AppCompatActivity() {
 
                 tvSharedUid.text = "Shared User ID: ${packageInfo.sharedUserId ?: "None"}"
                 tvAppUid.text = "Application UID: ${appInfo.uid}"
-
-                // Show Signature
-                tvSignature.text = getSignatureInfo(packageName)
 
                 val btnFindSisterApps = findViewById<android.widget.Button>(R.id.btnFindSisterApps)
                 if (packageInfo.sharedUserId != null) {
@@ -469,6 +465,98 @@ class ApkDetailsActivity : AppCompatActivity() {
                 }
                 val auditedLibs = libsToAudit.mapNotNull { pair -> auditNativeLibrary(pair.first, pair.second) }
 
+                // Cryptographic Developer Signature and Schemes Auditing
+                val hasV1 = entriesList.any { it.second.startsWith("META-INF/") && (it.second.endsWith(".SF") || it.second.endsWith(".DSA") || it.second.endsWith(".RSA") || it.second.endsWith(".EC")) }
+                val baseApkPath = appInfo.sourceDir
+                val blockResults = parseApkSigningBlock(baseApkPath)
+                val hasV2 = blockResults.first
+                val hasV3 = blockResults.second
+                val hasV31 = blockResults.third
+                val hasV4 = java.io.File("$baseApkPath.idsig").exists()
+
+                var issuerName = "Unknown"
+                var subjectName = "Unknown"
+                var sigAlg = "Unknown"
+                var validityStr = "Unknown"
+                var sha256Hex = "Unknown"
+                var sha1Hex = "Unknown"
+                
+                val warnings = ArrayList<String>()
+                val bestPractices = ArrayList<String>()
+
+                try {
+                    val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        val packageInfoCert = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(PackageManager.GET_SIGNING_CERTIFICATES.toLong()))
+                        } else {
+                            @Suppress("DEPRECATION")
+                            packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
+                        }
+                        packageInfoCert.signingInfo?.let { sInfo ->
+                            if (sInfo.hasMultipleSigners()) sInfo.apkContentsSigners else sInfo.signingCertificateHistory
+                        }
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val packageInfoCert = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
+                        @Suppress("DEPRECATION")
+                        packageInfoCert.signatures
+                    }
+
+                    if (!signatures.isNullOrEmpty()) {
+                        val firstSig = signatures[0]
+                        val certFactory = java.security.cert.CertificateFactory.getInstance("X.509")
+                        val cert = certFactory.generateCertificate(java.io.ByteArrayInputStream(firstSig.toByteArray())) as java.security.cert.X509Certificate
+                        
+                        issuerName = cert.issuerDN.name
+                        subjectName = cert.subjectDN.name
+                        sigAlg = cert.sigAlgName
+                        
+                        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+                        validityStr = "From ${sdf.format(cert.notBefore)} to ${sdf.format(cert.notAfter)}"
+                        
+                        val md256 = java.security.MessageDigest.getInstance("SHA-256")
+                        sha256Hex = md256.digest(firstSig.toByteArray()).joinToString(":") { "%02X".format(it) }
+                        
+                        val md1 = java.security.MessageDigest.getInstance("SHA-1")
+                        sha1Hex = md1.digest(firstSig.toByteArray()).joinToString(":") { "%02X".format(it) }
+
+                        val sigAlgLower = sigAlg.lowercase(java.util.Locale.getDefault())
+                        if (sigAlgLower.contains("md5") || sigAlgLower.contains("sha1")) {
+                            warnings.add("🔴 CRITICAL: Cryptographically weak signature algorithm ($sigAlg). This makes the signature susceptible to collision and spoofing attacks.")
+                        } else {
+                            bestPractices.add("🟢 COMPLIANT: Secure signature algorithm ($sigAlg).")
+                        }
+
+                        if (issuerName == subjectName) {
+                            bestPractices.add("🔵 INFO: Certificate is self-signed. This is standard for Android development, but ensure the private key is stored in a secure Keystore/HSM.")
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                val targetSdkVersion = appInfo.targetSdkVersion
+                
+                if (hasV1 && !hasV2 && !hasV3) {
+                    warnings.add("🔴 WARNING: Only V1 (JAR) signature is present. The app is vulnerable to the Janus Vulnerability (CVE-2017-13156) on Android 5.0 to 8.0, allowing attackers to inject malicious DEX classes directly into the APK zip container without invalidating the cryptographic signature.")
+                } else if (!hasV1 && (hasV2 || hasV3)) {
+                    bestPractices.add("🔵 INFO: JAR signing (V1) is disabled, but whole-file signing (V2/V3) is active. The app will only install on Android 7.0 (API 24) and higher.")
+                } else {
+                    bestPractices.add("🟢 COMPLIANT: JAR signing (V1) and whole-file signing (V2/V3) are both active. Protected against Janus vulnerability.")
+                }
+
+                if (!hasV2 && !hasV3) {
+                    warnings.add("🔴 WARNING: Missing modern whole-file Signature Schemes (V2/V3). Whole-file signing is mandatory for modern Android releases and guarantees faster on-device verification and ZIP structural integrity protection.")
+                }
+
+                if (targetSdkVersion >= 30) {
+                    if (!hasV4) {
+                        bestPractices.add("🟡 RECOMMENDED: Target SDK is 30+ but APK Signature Scheme v4 is missing. Implementing V4 enables seamless incremental installations (Play Feature Delivery).")
+                    } else {
+                        bestPractices.add("🟢 COMPLIANT: APK Signature Scheme v4 is active for incremental installs.")
+                    }
+                }
+
                 // Update UI on main thread
                 runOnUiThread {
                     tvTechnology.text = "Technology: $framework"
@@ -478,6 +566,56 @@ class ApkDetailsActivity : AppCompatActivity() {
                     val techText = if (obfuscationScore > 15) " | Method: $obfuscatorTech" else ""
                     tvObfuscationScore.text = "$scoreText$techText"
                     tvObfuscationScore.setTextColor(if (obfuscationScore > 50) android.graphics.Color.parseColor("#FF5722") else if (obfuscationScore > 15) android.graphics.Color.parseColor("#FFEB3B") else android.graphics.Color.WHITE)
+
+                    // Bind dynamic Signature Schemes UI
+                    val tvSigSchemes = findViewById<TextView>(R.id.tvSigSchemes)
+                    val tvSigIssuer = findViewById<TextView>(R.id.tvSigIssuer)
+                    val tvSigSubject = findViewById<TextView>(R.id.tvSigSubject)
+                    val tvSigAlgorithm = findViewById<TextView>(R.id.tvSigAlgorithm)
+                    val tvSigValidity = findViewById<TextView>(R.id.tvSigValidity)
+                    val tvSigSHA256 = findViewById<TextView>(R.id.tvSigSHA256)
+                    val tvSigSHA1 = findViewById<TextView>(R.id.tvSigSHA1)
+                    val llSigFindings = findViewById<LinearLayout>(R.id.llSigFindings)
+
+                    llSigFindings.removeAllViews()
+
+                    val schemesBuilder = StringBuilder("Signature Schemes Used:\n")
+                    schemesBuilder.append(" • V1 (JAR Signing): ").append(if (hasV1) "✓ YES" else "✗ NO").append("\n")
+                    schemesBuilder.append(" • V2 (APK v2): ").append(if (hasV2) "✓ YES" else "✗ NO").append("\n")
+                    schemesBuilder.append(" • V3 (APK v3): ").append(if (hasV3) "✓ YES" else "✗ NO").append("\n")
+                    if (hasV31) {
+                        schemesBuilder.append(" • V3.1 (APK v3.1): ✓ YES\n")
+                    }
+                    schemesBuilder.append(" • V4 (Incremental): ").append(if (hasV4) "✓ YES" else "✗ NO")
+
+                    tvSigSchemes.text = schemesBuilder.toString()
+                    tvSigIssuer.text = "Issuer: $issuerName"
+                    tvSigSubject.text = "Subject: $subjectName"
+                    tvSigAlgorithm.text = "Signature Algorithm: $sigAlg"
+                    tvSigValidity.text = "Validity: $validityStr"
+                    tvSigSHA256.text = "SHA-256 Hash:\n$sha256Hex"
+                    tvSigSHA1.text = "SHA-1 Hash:\n$sha1Hex"
+
+                    for (warning in warnings) {
+                        llSigFindings.addView(TextView(this@ApkDetailsActivity).apply {
+                            text = warning
+                            setTextColor(android.graphics.Color.parseColor("#FF5555"))
+                            textSize = 12f
+                            setPadding(0, 4, 0, 4)
+                        })
+                    }
+
+                    for (bp in bestPractices) {
+                        val isInfo = bp.contains("INFO:")
+                        val isRecommended = bp.contains("RECOMMENDED:")
+                        val colorHex = if (isInfo) "#8888FF" else if (isRecommended) "#FFFF55" else "#55FF55"
+                        llSigFindings.addView(TextView(this@ApkDetailsActivity).apply {
+                            text = bp
+                            setTextColor(android.graphics.Color.parseColor(colorHex))
+                            textSize = 12f
+                            setPadding(0, 4, 0, 4)
+                        })
+                    }
 
                     if (auditedLibs.isNotEmpty()) {
                         findViewById<androidx.cardview.widget.CardView>(R.id.cardNativeLibs).visibility = android.view.View.VISIBLE
@@ -511,46 +649,99 @@ class ApkDetailsActivity : AppCompatActivity() {
         return sdf.format(java.util.Date(timeMs))
     }
 
-    private fun getSignatureInfo(packageName: String): String {
+    private fun parseApkSigningBlock(apkPath: String): Triple<Boolean, Boolean, Boolean> {
+        var hasV2 = false
+        var hasV3 = false
+        var hasV31 = false
+        
         try {
-            val signatures = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(PackageManager.GET_SIGNING_CERTIFICATES.toLong()))
-                } else {
-                    @Suppress("DEPRECATION")
-                    packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNING_CERTIFICATES)
-                }
-                val signingInfo = packageInfo.signingInfo
-                if (signingInfo != null) {
-                    if (signingInfo.hasMultipleSigners()) {
-                        signingInfo.apkContentsSigners
-                    } else {
-                        signingInfo.signingCertificateHistory
+            java.io.RandomAccessFile(apkPath, "r").use { file ->
+                val length = file.length()
+                if (length < 22) return Triple(false, false, false)
+                
+                var eocdOffset = -1L
+                val scanStart = maxOf(0L, length - 1024)
+                val searchBytes = byteArrayOf(0x50, 0x4b, 0x05, 0x06) // EOCD signature (Little Endian)
+                
+                val buffer = ByteArray(1024)
+                file.seek(scanStart)
+                val bytesRead = file.read(buffer)
+                
+                for (i in bytesRead - 4 downTo 0) {
+                    if (buffer[i] == searchBytes[0] && buffer[i+1] == searchBytes[1] &&
+                        buffer[i+2] == searchBytes[2] && buffer[i+3] == searchBytes[3]) {
+                        eocdOffset = scanStart + i
+                        break
                     }
-                } else {
-                    null
                 }
-            } else {
-                @Suppress("DEPRECATION")
-                val packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_SIGNATURES)
-                @Suppress("DEPRECATION")
-                packageInfo.signatures
+                
+                if (eocdOffset == -1L) return Triple(false, false, false)
+                
+                file.seek(eocdOffset + 16)
+                val cdOffset = readIntLE(file)
+                
+                if (cdOffset.toLong() >= length || cdOffset < 32) return Triple(false, false, false)
+                
+                file.seek(cdOffset.toLong() - 16)
+                val magicBytes = ByteArray(16)
+                file.readFully(magicBytes)
+                val magicString = String(magicBytes, Charsets.US_ASCII)
+                
+                if (magicString == "APK Sig Block 42") {
+                    file.seek(cdOffset.toLong() - 24)
+                    val blockLength = readLongLE(file)
+                    val startOffset = cdOffset.toLong() - (blockLength + 8)
+                    
+                    if (startOffset >= 0) {
+                        file.seek(startOffset)
+                        val totalPairsLength = blockLength - 24
+                        var bytesParsed = 0L
+                        
+                        while (bytesParsed < totalPairsLength) {
+                            val pairLength = readLongLE(file)
+                            if (pairLength < 4 || pairLength > totalPairsLength - bytesParsed) break
+                            
+                            val pairId = readIntLE(file).toLong() and 0xFFFFFFFFL
+                            
+                            when (pairId) {
+                                0x7109871aL -> hasV2 = true
+                                0xf05368c0L -> hasV3 = true
+                                0x1b93ad61L -> hasV31 = true
+                            }
+                            
+                            file.skipBytes((pairLength - 4).toInt())
+                            bytesParsed += pairLength + 8
+                        }
+                    }
+                }
             }
-
-            if (signatures.isNullOrEmpty()) return "Signatures: Unknown (None)"
-
-            val sb = java.lang.StringBuilder("Signatures (SHA-256 Hash):\n")
-            for (sig in signatures) {
-                val rawCert = sig.toByteArray()
-                val md = java.security.MessageDigest.getInstance("SHA-256")
-                val hashBytes = md.digest(rawCert)
-                val hexString = hashBytes.joinToString(":") { "%02X".format(it) }
-                sb.append(hexString).append("\n")
-            }
-            return sb.toString().trim()
         } catch (e: Exception) {
-            return "Signatures: Error reading: ${e.message}"
+            e.printStackTrace()
         }
+        
+        return Triple(hasV2, hasV3, hasV31)
+    }
+
+    private fun readIntLE(file: java.io.RandomAccessFile): Int {
+        val b = ByteArray(4)
+        file.readFully(b)
+        return (b[0].toInt() and 0xFF) or
+               ((b[1].toInt() and 0xFF) shl 8) or
+               ((b[2].toInt() and 0xFF) shl 16) or
+               ((b[3].toInt() and 0xFF) shl 24)
+    }
+
+    private fun readLongLE(file: java.io.RandomAccessFile): Long {
+        val b = ByteArray(8)
+        file.readFully(b)
+        return (b[0].toLong() and 0xFFL) or
+               ((b[1].toLong() and 0xFFL) shl 8) or
+               ((b[2].toLong() and 0xFFL) shl 16) or
+               ((b[3].toLong() and 0xFFL) shl 24) or
+               ((b[4].toLong() and 0xFFL) shl 32) or
+               ((b[5].toLong() and 0xFFL) shl 40) or
+               ((b[6].toLong() and 0xFFL) shl 48) or
+               ((b[7].toLong() and 0xFFL) shl 56)
     }
 
     private fun copyToClipboard(label: String, text: String) {

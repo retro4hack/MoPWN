@@ -260,7 +260,6 @@ class GeneralToolsActivity : AppCompatActivity() {
         Toast.makeText(this, "Active App & Class Tracker stopped.", Toast.LENGTH_SHORT).show()
     }
 
-    @Suppress("DEPRECATION")
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
