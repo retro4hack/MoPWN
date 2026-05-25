@@ -209,8 +209,7 @@ class ForegroundTrackerService : Service() {
             "com.android.systemui",
             "android",
             "com.google.android.inputmethod.latin",
-            "com.google.android.providers.media.module",
-            "com.topjohnwu.magisk"
+            "com.google.android.providers.media.module"
         )
         
         if (ignorePackages.contains(pkg)) {

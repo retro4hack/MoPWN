@@ -155,50 +155,7 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Signature & Developer Certificate Audit Card -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="#CC222222"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
-            android:layout_marginBottom="16dp">
-            
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-                
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Signature &amp; Certificate Audit"
-                    android:textColor="@color/green_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginBottom="8dp"/>
 
-                <!-- Schemes Used -->
-                <TextView android:id="@+id/tvSigSchemes" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="6dp" android:textIsSelectable="true"/>
-
-                <!-- Certificate Metadata -->
-                <TextView android:id="@+id/tvSigIssuer" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="4dp" android:textIsSelectable="true" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvSigSubject" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="4dp" android:textIsSelectable="true" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvSigAlgorithm" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="4dp" android:textIsSelectable="true" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvSigValidity" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="4dp" android:textIsSelectable="true" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvSigSHA256" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="4dp" android:textIsSelectable="true" android:textSize="13sp"/>
-                <TextView android:id="@+id/tvSigSHA1" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/white" android:layout_marginBottom="12dp" android:textIsSelectable="true" android:textSize="13sp"/>
-
-                <!-- Best Practice Findings -->
-                <LinearLayout
-                    android:id="@+id/llSigFindings"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="4dp"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
         <!-- Binary & Obfuscation Card -->
         <androidx.cardview.widget.CardView
