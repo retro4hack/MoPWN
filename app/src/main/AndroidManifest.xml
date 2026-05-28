@@ -15,6 +15,7 @@
         android:allowBackup="false"
         android:debuggable="false"
         android:largeHeap="true"
+        android:usesCleartextTraffic="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_mopwn"
@@ -47,9 +48,32 @@
         <activity android:name=".GeneralToolsActivity" />
         <activity android:name=".FridaManagerActivity" />
         <activity android:name=".SecretsAuditorActivity" />
+        <activity android:name=".DeeplinkAuditorActivity" />
+        <activity android:name=".OobConsoleActivity" />
+        
+        <activity
+            android:name=".DeeplinkHijackSimulatorActivity"
+            android:exported="true"
+            android:label="MoPWN Hijack Simulator"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter android:priority="999">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+            </intent-filter>
+        </activity>
         
         <service 
             android:name=".ForegroundTrackerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ForegroundServicePermission" />
+
+        <service 
+            android:name=".OobListenerService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse"

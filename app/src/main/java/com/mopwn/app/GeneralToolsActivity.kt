@@ -17,6 +17,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.switchmaterial.SwitchMaterial
+import android.content.ClipboardManager
+import android.content.ClipData
 import java.io.DataOutputStream
 
 class GeneralToolsActivity : AppCompatActivity() {
@@ -34,6 +36,10 @@ class GeneralToolsActivity : AppCompatActivity() {
     
     private lateinit var btnNavigateFrida: Button
     private lateinit var switchTracker: SwitchMaterial
+
+    private lateinit var tvGeneralOobStatus: TextView
+    private lateinit var tvGeneralOobEndpoint: TextView
+    private lateinit var btnNavigateOob: Button
 
     private var isRequestingPermission = false
 
@@ -95,6 +101,11 @@ class GeneralToolsActivity : AppCompatActivity() {
         // Initialize Smart Switch for Active App & Class Tracker
         switchTracker = findViewById(R.id.switchTracker)
 
+        // Initialize OOB Free-to-use Views
+        tvGeneralOobStatus = findViewById(R.id.tvGeneralOobStatus)
+        tvGeneralOobEndpoint = findViewById(R.id.tvGeneralOobEndpoint)
+        btnNavigateOob = findViewById(R.id.btnNavigateOob)
+
         // Load Spec details
         loadDeviceSpecs()
 
@@ -102,6 +113,28 @@ class GeneralToolsActivity : AppCompatActivity() {
         btnNavigateFrida.setOnClickListener {
             val intent = Intent(this, FridaManagerActivity::class.java)
             startActivity(intent)
+        }
+
+        btnNavigateOob.setOnClickListener {
+            val intent = Intent(this, OobConsoleActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnNavigateOob.setOnLongClickListener {
+            val isRunning = OobListenerService.isServiceRunning
+            if (isRunning) {
+                val localIp = OobListenerService.getLocalIpAddress() ?: "127.0.0.1"
+                val endpoint = "http://$localIp:1337/"
+                
+                val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("MoPWN Endpoint", endpoint)
+                clipboard.setPrimaryClip(clip)
+                
+                Toast.makeText(this, "🟢 Endpoint URL copied: $endpoint", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "⚪ Server is offline. Start the server first to copy the endpoint.", Toast.LENGTH_SHORT).show()
+            }
+            true
         }
 
         // Set the main Switch Listener
@@ -173,6 +206,9 @@ class GeneralToolsActivity : AppCompatActivity() {
         super.onResume()
         // Check Frida Server Status dynamically on entry/resume
         checkFridaStatus()
+        
+        // Check OOB Server Status dynamically on entry/resume
+        checkOobServerStatus()
         
         // Dynamically align Switch with actual background service execution status, 
         // avoiding racing alignments during notification runtime permission request flows
@@ -308,5 +344,24 @@ class GeneralToolsActivity : AppCompatActivity() {
             process?.destroy()
         }
         return output
+    }
+
+    private fun checkOobServerStatus() {
+        val isRunning = OobListenerService.isServiceRunning
+        if (isRunning) {
+            tvGeneralOobStatus.text = "RUNNING"
+            tvGeneralOobStatus.setTextColor(Color.parseColor("#4CAF50"))
+            
+            val localIp = OobListenerService.getLocalIpAddress() ?: "127.0.0.1"
+            val endpoint = "http://$localIp:1337/"
+            tvGeneralOobEndpoint.text = endpoint
+            tvGeneralOobEndpoint.setTextColor(Color.parseColor("#4CAF50"))
+        } else {
+            tvGeneralOobStatus.text = "OFFLINE"
+            tvGeneralOobStatus.setTextColor(Color.parseColor("#757575"))
+            
+            tvGeneralOobEndpoint.text = "None (Stopped)"
+            tvGeneralOobEndpoint.setTextColor(Color.parseColor("#757575"))
+        }
     }
 }

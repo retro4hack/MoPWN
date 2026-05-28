@@ -62,8 +62,15 @@
                 android:id="@+id/btnSecretsAuditor"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 android:text="Secrets &amp; Hardcoded Strings" />
+
+            <Button
+                android:id="@+id/btnDeeplinkAuditor"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="24dp"
+                android:text="Deeplinks &amp; URL Schemes" />
                 
             <View
                 android:layout_width="match_parent"

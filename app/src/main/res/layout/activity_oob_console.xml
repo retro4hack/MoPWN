@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://tools.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".OobConsoleActivity">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:text="OOB Hijack Console"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="20dp"
+        android:text="Intercept Universal Link leaks &amp; OOB tokens"
+        android:textColor="#AAAAAA"
+        android:textSize="12sp" />
+
+    <!-- Control Card -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#CC222222"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Server Status Indicator -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Server Status: "
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvServerStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OFFLINE"
+                    android:textColor="#757575"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="6dp" />
+            </LinearLayout>
+
+            <!-- Server Endpoint -->
+            <TextView
+                android:id="@+id/tvServerIp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Endpoint: None (Server Stopped)"
+                android:textColor="#AAAAAA"
+                android:textSize="13sp"
+                android:layout_marginBottom="16dp"
+                android:ellipsize="end"
+                android:singleLine="true" />
+
+            <!-- Dynamic OOB Redirect Config -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hijack Redirect Destination Endpoint:"
+                android:textColor="#CCCCCC"
+                android:textSize="11sp"
+                android:layout_marginBottom="4dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp"
+                android:gravity="center_vertical">
+
+                <EditText
+                    android:id="@+id/etConsoleOobEndpoint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="40dp"
+                    android:hint="http://127.0.0.1:1337/"
+                    android:textColor="@color/white"
+                    android:textColorHint="#44FFFFFF"
+                    android:background="#15FFFFFF"
+                    android:padding="8dp"
+                    android:textSize="12sp"
+                    android:inputType="textUri"
+                    android:layout_marginRight="8dp" />
+
+                <Button
+                    android:id="@+id/btnSaveConsoleOob"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="SAVE"
+                    android:textSize="11sp"
+                    android:backgroundTint="#00FF00"
+                    android:textColor="#121212"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Action Button -->
+            <Button
+                android:id="@+id/btnToggleServer"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="START SERVER"
+                android:backgroundTint="#1E88E5"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Console Log Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="INTERCEPTED PAYLOAD LOGS"
+            android:textColor="@color/green_primary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnClearTerminal"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Clear Logs"
+            android:textColor="#FF5555"
+            android:textSize="11sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Monospace Console Box (takes all remaining vertical space) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:cardBackgroundColor="#FF121212"
+        app:cardCornerRadius="6dp"
+        android:layout_marginBottom="10dp">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="12dp"
+            android:fillViewport="true">
+
+            <TextView
+                android:id="@+id/tvTerminalLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="[Console ready. Start the OOB Server to begin listening...]\n"
+                android:textColor="#00FF00"
+                android:textSize="12sp"
+                android:fontFamily="monospace" />
+        </ScrollView>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

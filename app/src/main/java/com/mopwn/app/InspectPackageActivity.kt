@@ -46,6 +46,12 @@ class InspectPackageActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        findViewById<Button>(R.id.btnDeeplinkAuditor).setOnClickListener {
+            val intent = Intent(this, DeeplinkAuditorActivity::class.java)
+            intent.putExtra("PACKAGE_NAME", packageName)
+            startActivity(intent)
+        }
+
 
         findViewById<Button>(R.id.btnDumpApk).setOnClickListener {
             extractApk(packageName, share = false)
