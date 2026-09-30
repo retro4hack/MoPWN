@@ -41,7 +41,17 @@ class GeneralToolsActivity : AppCompatActivity() {
     private lateinit var tvGeneralOobEndpoint: TextView
     private lateinit var btnNavigateOob: Button
 
+    private lateinit var tvGeneralProxyStatus: TextView
+    private lateinit var tvGeneralProxyHostPort: TextView
+    private lateinit var btnNavigateGlobalProxy: Button
+
     private var isRequestingPermission = false
+
+    private val proxyStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            checkGlobalProxyStatus()
+        }
+    }
 
     private val trackerStopReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -148,6 +158,24 @@ class GeneralToolsActivity : AppCompatActivity() {
             filter,
             androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
         )
+
+        // Initialize Global Proxy Views
+        tvGeneralProxyStatus = findViewById(R.id.tvGeneralProxyStatus)
+        tvGeneralProxyHostPort = findViewById(R.id.tvGeneralProxyHostPort)
+        btnNavigateGlobalProxy = findViewById(R.id.btnNavigateGlobalProxy)
+
+        btnNavigateGlobalProxy.setOnClickListener {
+            val intent = Intent(this, GlobalProxyActivity::class.java)
+            startActivity(intent)
+        }
+
+        val proxyFilter = IntentFilter(GlobalProxyManager.ACTION_PROXY_STATE_CHANGED)
+        androidx.core.content.ContextCompat.registerReceiver(
+            this,
+            proxyStateReceiver,
+            proxyFilter,
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onRequestPermissionsResult(
@@ -209,6 +237,9 @@ class GeneralToolsActivity : AppCompatActivity() {
         
         // Check OOB Server Status dynamically on entry/resume
         checkOobServerStatus()
+
+        // Check Global Proxy Status dynamically on entry/resume
+        checkGlobalProxyStatus()
         
         // Dynamically align Switch with actual background service execution status, 
         // avoiding racing alignments during notification runtime permission request flows
@@ -224,6 +255,11 @@ class GeneralToolsActivity : AppCompatActivity() {
         super.onDestroy()
         try {
             unregisterReceiver(trackerStopReceiver)
+        } catch (e: Exception) {
+            // ignore
+        }
+        try {
+            unregisterReceiver(proxyStateReceiver)
         } catch (e: Exception) {
             // ignore
         }
@@ -363,5 +399,26 @@ class GeneralToolsActivity : AppCompatActivity() {
             tvGeneralOobEndpoint.text = "None (Stopped)"
             tvGeneralOobEndpoint.setTextColor(Color.parseColor("#757575"))
         }
+    }
+
+    private fun checkGlobalProxyStatus() {
+        Thread {
+            val proxyVal = GlobalProxyManager.getProxyHostPort(this)
+            val isActive = GlobalProxyManager.isProxyActive(proxyVal)
+
+            runOnUiThread {
+                if (isActive && !proxyVal.isNullOrBlank()) {
+                    tvGeneralProxyStatus.text = "ATTIVO"
+                    tvGeneralProxyStatus.setTextColor(Color.parseColor("#4CAF50"))
+                    tvGeneralProxyHostPort.text = proxyVal
+                    tvGeneralProxyHostPort.setTextColor(Color.parseColor("#4CAF50"))
+                } else {
+                    tvGeneralProxyStatus.text = "DISATTIVO"
+                    tvGeneralProxyStatus.setTextColor(Color.parseColor("#F44336"))
+                    tvGeneralProxyHostPort.text = "None (:0)"
+                    tvGeneralProxyHostPort.setTextColor(Color.parseColor("#757575"))
+                }
+            }
+        }.start()
     }
 }

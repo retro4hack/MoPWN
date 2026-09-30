@@ -50,6 +50,7 @@
         <activity android:name=".SecretsAuditorActivity" />
         <activity android:name=".DeeplinkAuditorActivity" />
         <activity android:name=".OobConsoleActivity" />
+        <activity android:name=".GlobalProxyActivity" />
         
         <activity
             android:name=".DeeplinkHijackSimulatorActivity"
@@ -74,6 +75,13 @@
 
         <service 
             android:name=".OobListenerService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse"
+            tools:ignore="ForegroundServicePermission" />
+
+        <service 
+            android:name=".GlobalProxyService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse"

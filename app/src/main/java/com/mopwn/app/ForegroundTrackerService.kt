@@ -80,7 +80,9 @@ class ForegroundTrackerService : Service() {
         }
         
         // Broadcast that the service has stopped to dynamically update GeneralToolsActivity switch state in real-time
-        val stopBroadcast = Intent(ACTION_TRACKER_STOPPED)
+        val stopBroadcast = Intent(ACTION_TRACKER_STOPPED).apply {
+            setPackage(packageName)
+        }
         sendBroadcast(stopBroadcast)
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:fillViewport="true"
+    tools:context=".GlobalProxyActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- Title Header -->
+        <TextView
+            android:id="@+id/tvProxyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="Global Proxy Manager"
+            android:textColor="#FF5555"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="20dp"
+            android:text="System-wide HTTP proxy configuration (Root required)"
+            android:textColor="#AAAAAA"
+            android:textSize="13sp" />
+
+        <!-- Status Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#CC222222"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CURRENT PROXY STATUS"
+                    android:textColor="#FF5555"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="14dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="STATO"
+                            android:textColor="#88FFFFFF"
+                            android:textSize="10sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvProxyStatus"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Checking..."
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ENDPOINT"
+                            android:textColor="#88FFFFFF"
+                            android:textSize="10sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/tvProxyEndpoint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="None (:0)"
+                            android:textColor="#757575"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:singleLine="true"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Configuration Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#CC222222"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PROXY CONFIGURATION"
+                    android:textColor="#FF5555"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- IP Address Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="IP Address / Host:"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etProxyIp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="e.g. 192.168.1.100"
+                    android:textColor="@color/white"
+                    android:textColorHint="#66FFFFFF"
+                    android:backgroundTint="#FF5555"
+                    android:textSize="14sp"
+                    android:inputType="textUri|text"
+                    android:layout_marginBottom="16dp"/>
+
+                <!-- Port Field -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Port (Default: 8080):"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="6dp"/>
+
+                <EditText
+                    android:id="@+id/etProxyPort"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="8080"
+                    android:hint="8080"
+                    android:textColor="@color/white"
+                    android:textColorHint="#66FFFFFF"
+                    android:backgroundTint="#FF5555"
+                    android:textSize="14sp"
+                    android:inputType="number"
+                    android:layout_marginBottom="24dp"/>
+
+                <!-- Toggle Proxy Button -->
+                <Button
+                    android:id="@+id/btnToggleProxy"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:text="Attiva Proxy"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:backgroundTint="#2E7D32" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Command Info Card -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="#CC222222"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ROOT COMMANDS REFERENCE"
+                    android:textColor="#AAAAAA"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Attivazione:\nsettings put global http_proxy IP_PC:PORT\n\nDisattivazione:\nsettings put global http_proxy :0"
+                    android:textColor="#00FF00"
+                    android:fontFamily="monospace"
+                    android:textSize="11sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Una notifica permanente resta attiva finché il proxy è attivo, con un pulsante rapido per la disconnessione."
+                    android:textColor="#88FFFFFF"
+                    android:textSize="11sp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>

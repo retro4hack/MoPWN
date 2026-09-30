@@ -17,7 +17,8 @@ It's still in development and I will try to add as many functionalities as I can
 * Navigate the data of the target application, download any file you need to access it easily
 * Dump or share the APK(s) (including bundles)
 * Manage the installation and execution of your Frida Server
-* Shows the current foreground class in a permanent notification (if the service is running, clearly)
+* The application shows the current foreground class in a permanent notification (if the service is running, clearly)
+* Set a proxy to enable the interception of requests and responses
 
 ## Current Limits
 * At the moment the server is only capable of understanding the requests from the Universal Links functionalities
