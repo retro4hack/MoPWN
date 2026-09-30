@@ -59,12 +59,40 @@ object GlobalProxyManager {
     }
 
     /**
-     * Deactivates the global proxy using root shell command:
-     * settings put global http_proxy :0
+     * Deactivates the global proxy.
+     * Tries multiple methods for maximum compatibility across Android versions and ROM variants:
+     *  1. settings put global http_proxy :0  (standard null/disable value)
+     *  2. settings delete global http_proxy   (removes the setting entirely)
+     *  3. settings put global global_http_proxy ""  (clear on older APIs)
      */
     fun deactivateProxy(): Pair<Boolean, String?> {
-        val cmd = "settings put global http_proxy :0"
-        return executeRootCommand(cmd)
+        var process: Process? = null
+        return try {
+            process = Runtime.getRuntime().exec("su")
+            val os = java.io.DataOutputStream(process.outputStream)
+            // Method 1: set to :0 (official way)
+            os.writeBytes("settings put global http_proxy :0\n")
+            // Method 2: delete the setting entirely (belt-and-suspenders)
+            os.writeBytes("settings delete global http_proxy\n")
+            // Method 3: clear global_http_proxy used by some custom ROMs
+            os.writeBytes("settings put global global_http_proxy :\n")
+            os.writeBytes("exit\n")
+            os.flush()
+
+            val errorReader = process.errorStream.bufferedReader()
+            val errorMsg = errorReader.readText().trim()
+            val exitCode = process.waitFor()
+
+            if (exitCode == 0) {
+                Pair(true, null)
+            } else {
+                Pair(false, if (errorMsg.isNotBlank()) errorMsg else "Command exited with code $exitCode")
+            }
+        } catch (e: Exception) {
+            Pair(false, e.localizedMessage ?: "Failed to execute root command")
+        } finally {
+            process?.destroy()
+        }
     }
 
     fun startProxyService(context: Context, hostPort: String) {

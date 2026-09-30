@@ -48,14 +48,20 @@ class GlobalProxyService : Service() {
                     if (result.first) {
                         Toast.makeText(applicationContext, "MoPWN: Global Proxy Disabled", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(applicationContext, "Error disabling proxy: ${result.second}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            "Error disabling proxy: ${result.second}",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
 
-                // Broadcast state change explicitly within our app package
-                GlobalProxyManager.sendStateBroadcast(applicationContext)
-
-                stopForegroundAndSelf()
+                if (result.first) {
+                    // Only stop the foreground service (and its notification) if proxy was actually disabled
+                    GlobalProxyManager.sendStateBroadcast(applicationContext)
+                    stopForegroundAndSelf()
+                }
+                // If deactivation failed, keep the notification alive so the user knows the proxy is still running
             }.start()
             return START_NOT_STICKY
         } else if (action == ACTION_STOP) {

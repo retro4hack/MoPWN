@@ -234,7 +234,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Activation:\nsettings put global http_proxy IP_PC:PORT\n\nDeactivation:\nsettings put global http_proxy :0"
+                    android:text="Activation:\nsettings put global http_proxy IP_PC:PORT\n\nDeactivation (applied in sequence):\nsettings put global http_proxy :0\nsettings delete global http_proxy"
                     android:textColor="#00FF00"
                     android:fontFamily="monospace"
                     android:textSize="11sp"
