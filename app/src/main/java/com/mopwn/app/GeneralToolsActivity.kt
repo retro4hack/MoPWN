@@ -408,12 +408,12 @@ class GeneralToolsActivity : AppCompatActivity() {
 
             runOnUiThread {
                 if (isActive && !proxyVal.isNullOrBlank()) {
-                    tvGeneralProxyStatus.text = "ATTIVO"
+                    tvGeneralProxyStatus.text = "ACTIVE"
                     tvGeneralProxyStatus.setTextColor(Color.parseColor("#4CAF50"))
                     tvGeneralProxyHostPort.text = proxyVal
                     tvGeneralProxyHostPort.setTextColor(Color.parseColor("#4CAF50"))
                 } else {
-                    tvGeneralProxyStatus.text = "DISATTIVO"
+                    tvGeneralProxyStatus.text = "DISABLED"
                     tvGeneralProxyStatus.setTextColor(Color.parseColor("#F44336"))
                     tvGeneralProxyHostPort.text = "None (:0)"
                     tvGeneralProxyHostPort.setTextColor(Color.parseColor("#757575"))

@@ -404,7 +404,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="STATO"
+                            android:text="STATUS"
                             android:textColor="#88FFFFFF"
                             android:textSize="9sp"
                             android:textStyle="bold"/>
@@ -428,7 +428,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="PROXY (IP:PORTA)"
+                            android:text="PROXY (IP:PORT)"
                             android:textColor="#88FFFFFF"
                             android:textSize="9sp"
                             android:textStyle="bold"/>

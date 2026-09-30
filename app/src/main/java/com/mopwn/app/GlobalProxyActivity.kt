@@ -66,14 +66,14 @@ class GlobalProxyActivity : AppCompatActivity() {
                 val portStr = etProxyPort.text.toString().trim()
 
                 if (ip.isBlank()) {
-                    Toast.makeText(this, "Inserisci un indirizzo IP valido", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Please enter a valid IP address", Toast.LENGTH_SHORT).show()
                     etProxyIp.requestFocus()
                     return@setOnClickListener
                 }
 
                 val port = portStr.toIntOrNull()
                 if (port == null || port < 1 || port > 65535) {
-                    Toast.makeText(this, "Inserisci una porta valida (1-65535)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Please enter a valid port (1-65535)", Toast.LENGTH_SHORT).show()
                     etProxyPort.requestFocus()
                     return@setOnClickListener
                 }
@@ -151,7 +151,7 @@ class GlobalProxyActivity : AppCompatActivity() {
             runOnUiThread {
                 isCurrentlyActive = isActive
                 if (isActive && !proxyVal.isNullOrBlank()) {
-                    tvProxyStatus.text = "ATTIVO"
+                    tvProxyStatus.text = "ACTIVE"
                     tvProxyStatus.setTextColor(Color.parseColor("#4CAF50"))
                     tvProxyEndpoint.text = proxyVal
                     tvProxyEndpoint.setTextColor(Color.parseColor("#4CAF50"))
@@ -164,11 +164,11 @@ class GlobalProxyActivity : AppCompatActivity() {
                         etProxyPort.setText(parts[1])
                     }
 
-                    // Quando il proxy è attivo, non devi poter modificare i dati di IP e porta
+                    // Lock IP and port fields while proxy is active
                     etProxyIp.isEnabled = false
                     etProxyPort.isEnabled = false
 
-                    btnToggleProxy.text = "Disattiva Proxy"
+                    btnToggleProxy.text = "Disable Proxy"
                     btnToggleProxy.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#C62828"))
 
                     // Ensure foreground service notification is running
@@ -176,16 +176,16 @@ class GlobalProxyActivity : AppCompatActivity() {
                         GlobalProxyManager.startProxyService(this, proxyVal)
                     }
                 } else {
-                    tvProxyStatus.text = "DISATTIVO"
+                    tvProxyStatus.text = "DISABLED"
                     tvProxyStatus.setTextColor(Color.parseColor("#F44336"))
                     tvProxyEndpoint.text = "None (:0)"
                     tvProxyEndpoint.setTextColor(Color.parseColor("#757575"))
 
-                    // Quando il proxy è disattivo, puoi modificare i dati di IP e porta
+                    // Unlock IP and port fields when proxy is inactive
                     etProxyIp.isEnabled = true
                     etProxyPort.isEnabled = true
 
-                    btnToggleProxy.text = "Attiva Proxy"
+                    btnToggleProxy.text = "Enable Proxy"
                     btnToggleProxy.backgroundTintList = ColorStateList.valueOf(Color.parseColor("#2E7D32"))
                 }
                 btnToggleProxy.isEnabled = true
@@ -195,15 +195,15 @@ class GlobalProxyActivity : AppCompatActivity() {
 
     private fun activateProxyFlow(ip: String, port: Int) {
         btnToggleProxy.isEnabled = false
-        btnToggleProxy.text = "Attivazione..."
+        btnToggleProxy.text = "Activating..."
 
         Thread {
             val hasRoot = GlobalProxyManager.checkRootAvailable()
             if (!hasRoot) {
                 runOnUiThread {
                     btnToggleProxy.isEnabled = true
-                    btnToggleProxy.text = "Attiva Proxy"
-                    Toast.makeText(this, "Permessi di root necessari per attivare il proxy!", Toast.LENGTH_LONG).show()
+                    btnToggleProxy.text = "Enable Proxy"
+                    Toast.makeText(this, "Root permissions are required to enable proxy!", Toast.LENGTH_LONG).show()
                 }
                 return@Thread
             }
@@ -228,11 +228,11 @@ class GlobalProxyActivity : AppCompatActivity() {
                     // Notify state change explicitly within our app package
                     GlobalProxyManager.sendStateBroadcast(this)
 
-                    Toast.makeText(this, "Proxy Globale Attivato ($hostPort)", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Global Proxy Enabled ($hostPort)", Toast.LENGTH_SHORT).show()
                     refreshProxyStatus()
                 } else {
-                    btnToggleProxy.text = "Attiva Proxy"
-                    Toast.makeText(this, "Errore attivazione proxy: $errorMsg", Toast.LENGTH_LONG).show()
+                    btnToggleProxy.text = "Enable Proxy"
+                    Toast.makeText(this, "Error enabling proxy: $errorMsg", Toast.LENGTH_LONG).show()
                 }
             }
         }.start()
@@ -240,7 +240,7 @@ class GlobalProxyActivity : AppCompatActivity() {
 
     private fun deactivateProxyFlow() {
         btnToggleProxy.isEnabled = false
-        btnToggleProxy.text = "Disattivazione..."
+        btnToggleProxy.text = "Disabling..."
 
         Thread {
             val result = GlobalProxyManager.deactivateProxy()
@@ -255,11 +255,11 @@ class GlobalProxyActivity : AppCompatActivity() {
                     // Notify state change explicitly within our app package
                     GlobalProxyManager.sendStateBroadcast(this)
 
-                    Toast.makeText(this, "Proxy Globale Disattivato", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Global Proxy Disabled", Toast.LENGTH_SHORT).show()
                     refreshProxyStatus()
                 } else {
-                    btnToggleProxy.text = "Disattiva Proxy"
-                    Toast.makeText(this, "Errore disattivazione proxy: $errorMsg", Toast.LENGTH_LONG).show()
+                    btnToggleProxy.text = "Disable Proxy"
+                    Toast.makeText(this, "Error disabling proxy: $errorMsg", Toast.LENGTH_LONG).show()
                 }
             }
         }.start()

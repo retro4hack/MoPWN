@@ -46,9 +46,9 @@ class GlobalProxyService : Service() {
                 val result = GlobalProxyManager.deactivateProxy()
                 Handler(Looper.getMainLooper()).post {
                     if (result.first) {
-                        Toast.makeText(applicationContext, "MoPWN: Proxy Globale Disattivato", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(applicationContext, "MoPWN: Global Proxy Disabled", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(applicationContext, "Errore disattivazione proxy: ${result.second}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(applicationContext, "Error disabling proxy: ${result.second}", Toast.LENGTH_LONG).show()
                     }
                 }
 
@@ -103,7 +103,7 @@ class GlobalProxyService : Service() {
                 "MoPWN Global Proxy",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Notifica permanente per lo stato del Proxy Globale MoPWN"
+                description = "Persistent notification for MoPWN Global Proxy status"
             }
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             manager.createNotificationChannel(channel)
@@ -111,7 +111,7 @@ class GlobalProxyService : Service() {
     }
 
     private fun buildProxyNotification(hostPort: String): Notification {
-        // Cliccandoci porta all'activity di global proxy
+        // Tapping notification opens GlobalProxyActivity
         val intent = Intent(this, GlobalProxyActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
@@ -122,7 +122,7 @@ class GlobalProxyService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Pulsante "Disconnetti" per disattivare direttamente il proxy
+        // "Disconnect" action to immediately disable the proxy
         val disconnectIntent = Intent(this, GlobalProxyService::class.java).apply {
             action = ACTION_DISCONNECT
         }
@@ -143,7 +143,7 @@ class GlobalProxyService : Service() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
-            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Disconnetti", disconnectPending)
+            .addAction(android.R.drawable.ic_menu_close_clear_cancel, "Disconnect", disconnectPending)
             .build()
     }
 }

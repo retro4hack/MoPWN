@@ -76,7 +76,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="STATO"
+                            android:text="STATUS"
                             android:textColor="#88FFFFFF"
                             android:textSize="10sp"
                             android:textStyle="bold"/>
@@ -198,7 +198,7 @@
                     android:id="@+id/btnToggleProxy"
                     android:layout_width="match_parent"
                     android:layout_height="54dp"
-                    android:text="Attiva Proxy"
+                    android:text="Enable Proxy"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
@@ -234,7 +234,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Attivazione:\nsettings put global http_proxy IP_PC:PORT\n\nDisattivazione:\nsettings put global http_proxy :0"
+                    android:text="Activation:\nsettings put global http_proxy IP_PC:PORT\n\nDeactivation:\nsettings put global http_proxy :0"
                     android:textColor="#00FF00"
                     android:fontFamily="monospace"
                     android:textSize="11sp"
@@ -243,7 +243,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Una notifica permanente resta attiva finché il proxy è attivo, con un pulsante rapido per la disconnessione."
+                    android:text="A persistent notification remains active while the proxy is running, with a quick action button to disconnect."
                     android:textColor="#88FFFFFF"
                     android:textSize="11sp"/>
             </LinearLayout>
